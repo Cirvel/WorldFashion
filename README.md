@@ -1,5 +1,5 @@
-# BidangLomba
-Web Design And Development
+# World Fashion 2017
+Bidang Lomba
 
 ## External
 * PDF [KELOMPOK 4.pdf](https://github.com/Cirvel/BidangLomba/files/15242494/KELOMPOK.4.pdf)
