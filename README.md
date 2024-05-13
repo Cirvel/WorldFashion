@@ -1,4 +1,4 @@
-# World Fashion 2017
+# World Fashion
 Bidang Lomba
 
 ## External
