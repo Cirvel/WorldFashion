@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Pages extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'title',
+        'place',
+        'start_date',
+        'end_date',
+        'description',
+        'location',
+        'video',
+    ];
 }

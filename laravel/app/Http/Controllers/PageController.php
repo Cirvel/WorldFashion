@@ -12,7 +12,13 @@ class PageController extends Controller
      */
     public function index()
     {
-        //
+        if(!auth()->id()){ // If not auth, redirect to login
+            return redirect()->route('session.login');
+        }elseif (!auth()->user()->level!="admin") { // If not admin, redirect to home
+            return redirect()->route('dashboard');
+        }
+
+        return view('pages.index');
     }
 
     /**
