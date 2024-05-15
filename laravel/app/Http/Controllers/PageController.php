@@ -34,7 +34,22 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate data
+        $pField = $request->validate([
+            'title' => ['required','max:50'],
+            'place' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'description' => 'required',
+            'location' => 'required',
+            'video' => 'required',
+        ]);
+
+        // Stores data
+        Pages::create($pField);
+
+        // Returns to index
+        return redirect()->route('posts.index')->with('success','Data successfully stored');
     }
 
     /**
@@ -48,9 +63,13 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pages $pages)
+    public function edit(String $id)
     {
-        //
+        // Find row id
+        $page = Pages::findOrFail($id);
+        
+        // Redirect to edit form with the collected data
+        return view('pages.edit', ['page' => $page]);
     }
 
     /**

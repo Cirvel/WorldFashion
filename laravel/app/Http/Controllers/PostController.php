@@ -34,7 +34,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate data
+        $pField = $request->validate([
+            'title' => ['required','max:35'],
+            'message' => 'required',
+        ]);
+
+        // Stores data
+        Posts::create($pField);
+
+        // Returns to index
+        return redirect()->route('posts.index')->with('success','Data successfully stored');
     }
 
     /**
