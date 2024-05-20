@@ -2,7 +2,7 @@
 
 <html lang="en" data-bs-theme="auto">
     <head>
-        <title>Users</title>    
+        <title>Events</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -18,34 +18,40 @@
     <!-- Body -->
     <div class="mb-3"></div>
         <div class="container-md form-control mx-auto p-2">
-            <form class="" method="POST" action="{{ route('users.store') }}">
+            <form class="" method="POST" action="{{ route('events.store') }}">
                 @csrf
                 @method('post')
                 <div class="mb-3 d-flex">
-                    <h3 class="form-label">CREATE USER</h3>
+                    <h3 class="form-label">CREATE EVENT</h3>
                     <div class="ms-auto">
-                        <a href="{{ route('users.index') }}">
+                        <a href="{{ route('events.index') }}">
                             <button type="button" class="btn btn-close"></button>
                         </a>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
+                    <label for="name" class="form-label">Title</label>
                     <input type="text" class="form-control" name="name" id="name" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="text" class="form-control" name="password" id="password" required>
+                    <label for="place" class="form-label">Place</label>
+                    <input type="text" class="form-control" name="place" id="place" required>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com" required>
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" cols="30" rows="10" class="form-control"></textarea>
                 </div>
                 <div class="mb-3">
-                    <select name="level" id="level" class="form-select">
-                        <option value="user" selected>User</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" name="start_date" id="start_date" placeholder="" required>
+                </div>
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" name="end_date" id="end_date" placeholder="" required>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <textarea name="location" id="location" cols="30" rows="2" class="form-control"></textarea>
                 </div>
                 
                 <div>

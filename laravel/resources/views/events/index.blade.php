@@ -2,7 +2,7 @@
 
 <html lang="en" data-bs-theme="auto">
     <head>
-        <title>Users</title>    
+        <title>Events</title>    
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -17,7 +17,7 @@
     <!-- Body -->
     <body class="m-2">
         <div class="mb-3 d-flex">
-            <h3 class="form-label">USERS</h3>
+            <h3 class="form-label">EVENTS</h3>
             <div class="ms-auto">
                 <a href="{{ route('dashboard.admin') }}">
                     <button type="button" class="btn btn-close"></button>
@@ -34,17 +34,18 @@
                 </div>
                 <div class="d-md-flex d-flex flex-grow-1 gap-2">
                     <select class="form-select" name="filter" id="filter" title="Filter">
-                        <option value="user_id">#</option>
-                        <option value="name">Username</option>
-                        <option value="email">Email</option>
-                        <option value="level">Level</option>
+                        <option value="event_id">#</option>
+                        <option value="title">Title</option>
+                        <option value="place">Place</option>
+                        <option value="description">Description</option>
+                        <option value="location">Location</option>
                     </select>
                     <select class="form-select" name="sort" id="sort" title="Sort Order">
                         <option value="asc">Ascending</option>
                         <option value="desc">Descending</option>
                     </select>
-                    <a href="{{ route('users.create') }}">
-                        <button type="button" class="btn btn-outline-success text-nowrap ms-2"><i class="fa fa-plus"></i><span class="d-none d-md-inline"> Add User</span></button>
+                    <a href="{{ route('events.create') }}">
+                        <button type="button" class="btn btn-outline-success text-nowrap ms-2"><i class="fa fa-plus"></i><span class="d-none d-md-inline"> Add Event</span></button>
                     </a>
                 </div>
             </div>
@@ -55,47 +56,35 @@
         <table class="table table-striped" id="search_list">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 10ch;">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Password</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Role</th>
+                    <th scope="col" style="width: 4ch;">#</th>
+                    <th scope="col" style="width: 20ch;">Title</th>
+                    <th scope="col">Place</th>
+                    <th scope="col">Description</th>
+                    <th scope="col" style="width: 12ch;">End Date</th>
+                    <th scope="col" style="width: 12ch;">Start Date</th>
+                    <th scope="col">Location</th>
                     <th scope="col" style="width: 15ch;">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ( $users as $user )
+                @foreach ( $events as $event )
                     <tr>
-                        <td scope="row">{{ $user->user_id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->password }}</td>
-                        <td>{{ $user->email }}</td>
+                        <td scope="row">{{ $event->event_id }}</td>
+                        <td>{{ $event->title }}</td>
+                        <td>{{ $event->place }}</td>
+                        <td>{{ $event->description }}</td>
+                        <td>{{ $event->start_date }}</td>
+                        <td>{{ $event->end_date }}</td>
+                        <td>{{ $event->location }}</td>
                         <td>
-                            @if ($user->level == "admin")
-                                {{-- If user is admin, display check --}}
-                                <i class="fas fa-star fa-sm fa-fw"></i> Admin
-                            @else
-                                {{-- If user is not an admin, display cross --}}
-                                <i class="fas fa-user fa-sm fa-fw"></i> User
-                            @endif
-                        </td>
-                        <td>
-                            @if (!auth()->id() == $user->user_id)
-                                {{-- If row is the user, remove all option completely --}}
-                                <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('users.destroy', ['user' => $user])}}" method="POST">
-                                    <a href="{{ route('users.edit', ['user' => $user]) }}" class="text-decoration-none">
-                                        <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
-                                    </a>
-                                    @csrf
-                                    @method('delete')
-                                    <button class="btn btn-danger mb-1"><i class="fas fa-trash"></i></button>
-                                </form>
-                            @else
-                                {{-- If row is account, simply give logout option --}}
-                                <a href="/logout">
-                                    <button class="btn btn-danger"><i class="fa fa-sign-out" aria-hidden="true"></i> <span class="d-none d-md-inline">Log out</span> </button>
+                            <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('events.destroy', ['event' => $event])}}" method="POST">
+                                <a href="{{ route('events.edit', ['event' => $event]) }}" class="text-decoration-none">
+                                    <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
                                 </a>
-                            @endif
+                                @csrf
+                                @method('delete')
+                                <button class="btn btn-danger mb-1"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -115,7 +104,7 @@
             var filter = $('#filter').val(); // Get selected filter value
             var sort = $('#sort').val(); // Get selected sort value
             $.ajax({ // Ajax script
-                url: "{{ route('users.search') }}", // Route
+                url: "{{ route('events.search') }}", // Route
                 type: "GET", // Method
                 data: {'search':query,filter,sort}, 
                 success:function(data){ // If process has no error..
