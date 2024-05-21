@@ -77,7 +77,7 @@
                         <td>{{ $event->end_date }}</td>
                         <td>{{ $event->location }}</td>
                         <td>
-                            <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('events.destroy', ['event' => $event])}}" method="POST">
+                            <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('events.destroy', ['event' => $event]) }}" method="POST">
                                 <a href="{{ route('events.edit', ['event' => $event]) }}" class="text-decoration-none">
                                     <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
                                 </a>

@@ -66,7 +66,7 @@
             <tbody>
                 @foreach ( $users as $user )
                     <tr>
-                        <td scope="row">{{ $user->user_id }}</td>
+                        <td scope="row">{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->password }}</td>
                         <td>{{ $user->email }}</td>
@@ -80,10 +80,10 @@
                             @endif
                         </td>
                         <td>
-                            @if (!auth()->id() == $user->user_id)
+                            @if (!auth()->id() == $user->id)
                                 {{-- If row is the user, remove all option completely --}}
-                                <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('users.destroy', ['user' => $user])}}" method="POST">
-                                    <a href="{{ route('users.edit', ['user' => $user]) }}" class="text-decoration-none">
+                                <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST">
+                                    <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="text-decoration-none">
                                         <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
                                     </a>
                                     @csrf

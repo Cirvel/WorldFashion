@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -60,6 +62,15 @@ class UserController extends Controller
         //
     }
 
+    public function decryptPassword(String $value){
+        try {
+            $decrypted = Crypt::decryptString($value);
+            return $decrypted;
+        } catch (DecryptException $e) {
+            // ...
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -67,14 +78,19 @@ class UserController extends Controller
     {
         // Find row id
         $user = User::findOrFail($id);
+        $decrypted = $this->decryptPassword($user->password) ?? "LOl";
         
         // If user is trying to edit itself, redirect them
         if (auth()->id() == $id) {
             return redirect()->route('users.index');
         }
+        
 
         // Redirect to edit form with the collected data
-        return view('users.edit', ['user' => $user]);
+        return view('users.edit', [
+            'user' => $user,
+            'password' => $decrypted,
+        ]);
     }
 
     /**
@@ -91,7 +107,6 @@ class UserController extends Controller
 
         $request['name'] = strip_tags($pField['name']);
         $request['email'] = strip_tags($pField['email']);
-        $request['level'] = $request->get('level');
 
         User::findOrFail($id)->update([
             'name' => $request->name,
@@ -153,7 +168,7 @@ class UserController extends Controller
                 foreach($data as $user){
                     $output .=
                     '<tr>
-                        <td scope="row">'. $user->user_id .'</td>
+                        <td scope="row">'. $user->id .'</td>
                         <td>'. $user->name .'</td>
                         <td>'. $user->password .'</td>
                         <td>'. $user->email .'</td>
@@ -166,7 +181,7 @@ class UserController extends Controller
                     $output .=
                     '</td>
                         <td>';
-                            if (!auth()->id() == $user->user_id){ // If the row is the user, remove option
+                            if (!auth()->id() == $user->id){ // If the row is the user, remove option
                                 $output .=
                                 '
                                 <form onsubmit="return confirm('."'Are you sure you want to delete this data?'".')" action="'.route('users.destroy', ['user' => $user]).'" method="POST">

@@ -18,7 +18,7 @@
     <!-- Body -->
     <div class="mb-3"></div>
     <div class="container-md form-control mx-auto p-2">
-        <form class="" method="POST" action="{{ route('users.update',$user->user_id) }}">
+        <form class="" method="POST" action="{{ route('users.update',$user->id) }}">
             @csrf
             @method('put')
             <div class="mb-3 d-flex">
@@ -36,13 +36,13 @@
                 value="{{ $user->name }}"
                 required>
             </div>
-            {{-- <div class="mb-3">
+            <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="text" class="form-control" name="password" id="password"\
-                title="Original value: {{ $user->password }}"
-                value="{{ $user->password }}"
+                title="Original value: {{ $password }}"
+                value="{{ $password }}"
                 required>
-            </div>   --}}
+            </div>  
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com"

@@ -7,6 +7,24 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    public function isLoggedIn()
+    /* Check if user is logged in or back to the login */
+    {
+        if(!auth()->id()){
+            return redirect()->route('dashboard.main');
+        }
+    }
+    
+    public function isAdmin()
+    /* Check if user is an admin or back to the dashboard, also doubles as isLoggedIn */
+    {
+        return $this->isLoggedIn();
+        
+        if(!auth()->user()->level=="admin"){
+            return redirect()->route('dashboard.main');
+        }
+    }
+
     /**
      * Login page.
      */
@@ -98,6 +116,7 @@ class AuthController extends Controller
         // Create user row
         $newUser = User::create($incomingFields); // Dep: App\Models\User
         // Automatically authenticate newly registered accoutn
+        $this->logout();
         auth()->login($newUser);
 
         // Redirect user to Home

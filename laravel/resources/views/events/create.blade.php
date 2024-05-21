@@ -29,9 +29,18 @@
                         </a>
                     </div>
                 </div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 <div class="mb-3">
-                    <label for="name" class="form-label">Title</label>
-                    <input type="text" class="form-control" name="name" id="name" required>
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" name="title" id="title" required>
                 </div>
                 <div class="mb-3">
                     <label for="place" class="form-label">Place</label>
@@ -39,7 +48,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea name="description" id="description" cols="30" rows="10" class="form-control"></textarea>
+                    <textarea name="description" id="description" cols="30" rows="10" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="start_date" class="form-label">Start Date</label>
@@ -51,8 +60,13 @@
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
-                    <textarea name="location" id="location" cols="30" rows="2" class="form-control"></textarea>
+                    <textarea name="location" id="location" cols="30" rows="2" class="form-control" required></textarea>
                 </div>
+                <div class="mb-3">
+                    <label for="video" class="form-label">Video</label>
+                    <input type="file" name="video" id="video">
+                </div>
+                
                 
                 <div>
                     <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>

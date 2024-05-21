@@ -18,13 +18,13 @@
     <!-- Body -->
     <div class="mb-3"></div>
     <div class="container-md form-control mx-auto p-2">
-        <form class="" method="POST" action="{{ route('users.update',$user->user_id) }}">
+        <form class="" method="POST" action="{{ route('events.update',$event->id) }}">
             @csrf
             @method('put')
             <div class="mb-3 d-flex">
                 <h3 class="form-label">EDIT USER</h3>
                 <div class="ms-auto">
-                    <a href="/users">
+                    <a href="{{ route('events.index') }}">
                         <button type="button" class="btn btn-close"></button>
                     </a>
                 </div>
