@@ -1,6 +1,10 @@
-function countdownTimer(){
-    /* Set the date for which to countdown for */
-    // ("[month_abbrv] [day], [year] [HH]:[MM]:[SS]  ")
+function countdownTimer()
+{
+    /**
+     * Used by dashboard.blade.php for displaying a countdown to a specific date
+     */
+
+    // ("[month_abbrv] [day], [year] [HH]:[MM]:[SS]")
     var countdownDate = new Date("Oct 19, 2024 18:00:00").getTime();
 
     /* Update countdown every second */
@@ -24,4 +28,17 @@ function countdownTimer(){
             document.getElementById("countdown").innerHTML = '<h1>EXPIRED</h1>'
         }
     }, 1000);
+}
+
+function calculateTotal()
+{
+    /**
+     * Used by booking ticket to calculate the total cost of a ticket
+     */
+
+    var amount = document.getElementById("amount").value;
+    var price = document.getElementById("price").value;
+    var total = amount * price;
+
+    document.getElementById("total").value = total; // Change value on a readonly input 'total'
 }

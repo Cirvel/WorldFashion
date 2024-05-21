@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+    public function price()
+    {
+        return 50000; // Universal price
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,10 +27,9 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        $transaction = Transaction::all();
-
-        return app(AuthController::class)->isAdmin() ??
-        view('transactions.index');
+        $price = $this->price();
+        return app(AuthController::class)->isLoggedIn() ??
+        view('booking', ['price' => $price]);
     }
 
     /**
@@ -34,7 +37,24 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        /* User paying method */
+
+        $pField = $request->validate([
+            'user_id' => ['required'],
+            'name' => ['required','max:35'],
+            'email' => ['required','email'],
+            'no_telp' => ['required','min:13','max:13'],
+            'amount' => ['required','integer'],
+            'total' => ['integer'],
+        ]);
+
+        $pField['name'] = strip_tags($pField['name']);
+        $pField['email'] = strip_tags($pField['email']);
+        $pField['no_telp'] = strip_tags($pField['no_telp']);
+
+        Transaction::create($pField);
+
+        return redirect()->route('dashboard.main')->with('success','ticket successfully purchased');
     }
 
     /**
@@ -59,16 +79,40 @@ class TransactionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Transaction $transaction)
+    public function update(Request $request, String $id)
     {
-        //
+        /* User paying method */
+
+        $pField = $request->validate([
+            'name' => ['required','max:35'],
+            'email' => ['required','email'],
+            'no_telp' => ['required','max:13'],
+            'amount' => ['required','integer'],
+            'total' => ['integer'],
+        ]);
+
+        $pField['name'] = strip_tags($pField['name']);
+        $pField['email'] = strip_tags($pField['email']);
+        $pField['no_telp'] = strip_tags($pField['no_telp']);
+
+        Transaction::findOrFail($id)->update([
+            'name' => $pField['name'],
+            'email' => $pField['email'],
+            'no_telp' => $pField['no_telp'],
+            'amount' => $pField['amount'],
+            'total' => $pField['total'],
+        ]);
+
+        return redirect()->route('dashboard.main')->with('success','ticket successfully purchased');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Transaction $transaction)
+    public function destroy(String $id)
     {
-        //
+        Transaction::destroy($id);
+
+        return redirect()->back()->with('success','data successfully destroyed');
     }
 }
