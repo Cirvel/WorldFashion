@@ -14,10 +14,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
         $users = User::all();
 
-        return view('users.index', ['users' => $users]);
+        return app(AuthController::class)->isAdmin() ??
+        view('users.index', ['users' => $users]);
     }
 
     /**
@@ -25,8 +25,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
-        return view('users.create');
+        return app(AuthController::class)->isAdmin() ??
+        view('users.create');
     }
 
     /**
@@ -78,19 +78,15 @@ class UserController extends Controller
     {
         // Find row id
         $user = User::findOrFail($id);
-        $decrypted = $this->decryptPassword($user->password) ?? "LOl";
         
         // If user is trying to edit itself, redirect them
         if (auth()->id() == $id) {
             return redirect()->route('users.index');
         }
         
-
         // Redirect to edit form with the collected data
-        return view('users.edit', [
-            'user' => $user,
-            'password' => $decrypted,
-        ]);
+        return app(AuthController::class)->isAdmin() ??
+        view('users.edit', ['user' => $user]);
     }
 
     /**

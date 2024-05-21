@@ -18,8 +18,6 @@ class EventController extends Controller
 
         return app(AuthController::class)->isAdmin() ??
         view('events.index', ['events' => $events]);
-        
-        // return redirect()->route('session.login');
     }
 
     /**

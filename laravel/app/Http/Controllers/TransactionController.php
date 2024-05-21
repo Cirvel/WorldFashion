@@ -12,7 +12,10 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
+        $transaction = Transaction::all();
+
+        return app(AuthController::class)->isAdmin() ??
+        view('transactions.index', ['transactions' => $transaction]);
     }
 
     /**
@@ -20,7 +23,10 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        //
+        $transaction = Transaction::all();
+
+        return app(AuthController::class)->isAdmin() ??
+        view('transactions.index');
     }
 
     /**
@@ -42,9 +48,12 @@ class TransactionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Transaction $transaction)
+    public function edit(String $id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+
+        return app(AuthController::class)->isAdmin() ??
+        view('transactions.index', ['transactions' => $transaction]);
     }
 
     /**

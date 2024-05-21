@@ -62,11 +62,10 @@
                     <label for="location" class="form-label">Location</label>
                     <textarea name="location" id="location" cols="30" rows="2" class="form-control" required></textarea>
                 </div>
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="video" class="form-label">Video</label>
                     <input type="file" name="video" id="video">
-                </div>
-                
+                </div> --}}
                 
                 <div>
                     <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>

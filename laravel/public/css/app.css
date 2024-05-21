@@ -1,4 +1,26 @@
-.kontol{
+/* Font Colors */
+.cw{
+    color: white;
+}
+
+/* Backround Color */
+.primary_color{
+    background-color: #124E66;
+}
+.secondary_color{
+    background-color: #A9C5D9;
+}
+.default_color{
+    background-color: #f6f5f3;
+}
+
+/* Basics */
+.no_padding_margin{
+    padding: 0;
+    margin: 0;
+}
+
+.background_sidebar_color{
     background-color: #124E66;
     color: #ffffff;
 }
@@ -35,7 +57,90 @@
     font-weight: bold;
 }
 
-.no_padding_margin{
-    padding: 0;
-    margin: 0;
+/* The Header Image CSS */
+.image-container {
+    position: relative;
+    width: 100%;
+}
+.image-container img {
+    width: 100%;
+    height: auto;
+}
+.text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: left;
+}
+.overlay_header {
+    width: 100%; /* Adjust width as needed */
+    padding: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Optional: text shadow */
+    font-size: 6em;
+}
+.overlay_desc {
+    width: 90%; /* Adjust width as needed */
+    padding: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Optional: text shadow */
+}
+
+/* News */
+.square-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* 1:1 aspect ratio */
+    overflow: hidden;
+}
+.square-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Six Piece Pic */
+.ratio-3x2 {
+    position: relative;
+    width: 100%;
+    padding-bottom: 66.67%; /* 3:2 aspect ratio (height/width * 100) */
+}
+.ratio-3x2 img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the container without distortion */
+}
+
+/* Footer */
+.main_color {
+    background-color: #124E66;
+    color: #fff;
+    padding: 20px 0;
+}
+.border-bottom {
+    border-bottom: 1px solid #fff;
+}
+.map-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+.map-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+footer {
+    margin-top: 20px;
 }

@@ -10,11 +10,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $username = auth()->id() ? auth()->user()->name : "Anonymous";
-
+    
     return view('dashboard', ['username' => $username]);
 })->name('dashboard.main');
+Route::get('former_event', function () {
+    $username = auth()->id() ? auth()->user()->name : "Anonymous";
+
+    return view('Former_Event', ['username' => $username]);
+})->name('dashboard.former');
 Route::get('admin', function () {
-    return view('crud');
+    return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
 
 /* CRUD */
