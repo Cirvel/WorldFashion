@@ -34,7 +34,7 @@
                 </div>
                 <div class="d-md-flex d-flex flex-grow-1 gap-2">
                     <select class="form-select" name="filter" id="filter" title="Filter">
-                        <option value="user_id">#</option>
+                        <option value="id">#</option>
                         <option value="name">Username</option>
                         <option value="email">Email</option>
                         <option value="level">Level</option>
@@ -80,7 +80,7 @@
                             @endif
                         </td>
                         <td>
-                            @if (!auth()->id() == $user->id)
+                            @if (auth()->id() != $user->id)
                                 {{-- If row is the user, remove all option completely --}}
                                 <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('users.destroy', ['user' => $user->id]) }}" method="POST">
                                     <a href="{{ route('users.edit', ['user' => $user->id]) }}" class="text-decoration-none">
@@ -92,7 +92,7 @@
                                 </form>
                             @else
                                 {{-- If row is account, simply give logout option --}}
-                                <a href="/logout">
+                                <a href="{{ route('session.logout') }}">
                                     <button class="btn btn-danger"><i class="fa fa-sign-out" aria-hidden="true"></i> <span class="d-none d-md-inline">Log out</span> </button>
                                 </a>
                             @endif

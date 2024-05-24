@@ -11,16 +11,16 @@ class AuthController extends Controller
     /* Check if user is logged in or back to the login */
     {
         if(!auth()->id()){
-            return redirect()->route('dashboard.main');
+            return redirect()->route('session.login');
         }
     }
     
     public function isAdmin()
     /* Check if user is an admin or back to the dashboard, also doubles as isLoggedIn */
     {
-        return $this->isLoggedIn();
-        
-        if(!auth()->user()->level=="admin"){
+        if(!auth()->id()){
+            return redirect()->route('session.login');
+        }elseif(auth()->user()->level!="admin"){
             return redirect()->route('dashboard.main');
         }
     }
@@ -31,7 +31,7 @@ class AuthController extends Controller
     public function index()
     {
         if(auth()->id()){ // If already auth, redirect to dashboard
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard.main');
         }
 
         return view('session.login');
@@ -43,7 +43,7 @@ class AuthController extends Controller
     public function index_2()
     {
         if(auth()->id()){ // If already auth, redirect to dashboard
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard.main');
         }
 
         return view('session.register');
@@ -55,8 +55,8 @@ class AuthController extends Controller
     public function create(Request $request) { // Dep: Illuminate\Http\Request
         // Check if field met criteria
         $incomingFields = $request->validate([
-            'name'  => ['required','min:5','max:35'],
-            'password'  => ['required','min:8','max:200'],
+            'name'  => ['required','min:1','max:15'],
+            'password'  => ['required','min:1','max:8'],
             'email'     => ['required','email'],
         ]);
         // Encrypts password
@@ -104,22 +104,38 @@ class AuthController extends Controller
      * Create a new user on the database
      */
     public function register(Request $request) { // Dep: Illuminate\Http\Request
+        /* 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+        Atleast contain 3 of each type
+        a-z
+        A-Z
+        0-9
+        !, @, #, %
+        */
+        
         // Check if field met criteria
         $incomingFields = $request->validate([
-            'user'  => ['required','min:5','max:35'],
-            'password'  => ['required','min:8','max:200'],
-            'email'     => ['required','email'],
+            'name' => ['required','min:1','max:15'],
+            'password' => [
+                'required',
+                'min:1',
+                'max:8',
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!$#%]).*$/'
+            ],
+            'no_telp' => ['required','min:10','max:13'],
+            'email' => ['required','email'],
         ]);
-        // Encrypts password
+
+        // Strip tags for potential malware
+        $incomingFields['name'] = strip_tags($incomingFields['name']);
         $incomingFields['password'] = bcrypt($incomingFields['password']);
+        $incomingFields['email'] = strip_tags($incomingFields['email']);
 
         // Create user row
         $newUser = User::create($incomingFields); // Dep: App\Models\User
         // Automatically authenticate newly registered accoutn
-        $this->logout();
         auth()->login($newUser);
 
         // Redirect user to Home
-        return redirect('/login')->with('success','Account successfuly registered.');
+        return redirect()->route('dashboard.main')->with('success','Account successfuly registered.');
     }
 }

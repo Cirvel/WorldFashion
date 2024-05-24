@@ -25,6 +25,7 @@ Route::get('admin', function () {
 
 /* Ticket */
 Route::get('booking', [TransactionController::class, 'create'])->name('booking');
+Route::get('qrcode', [TransactionController::class, 'alreadyBooked'])->name('qrcode');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
@@ -36,7 +37,7 @@ Route::get('transactions.search', [TransactionController::class, 'search'])->nam
 
 /* Session */
 Route::get('/login',    [AuthController::class, 'index'])->name('session.login'); // main page
-Route::get('/register',    [AuthController::class, 'index_2'])->name('session.register'); // main page
+Route::get('/signin',    [AuthController::class, 'index_2'])->name('session.register'); // main page
 Route::get('/logout',   [AuthController::class, 'logout'])->name('session.logout'); // logout
 Route::post('/login',    [AuthController::class, 'auth'])->name('session.auth'); // auth
-Route::post('/register',    [AuthController::class, 'create'])->name('session.create'); // auth
+Route::post('/register',    [AuthController::class, 'register'])->name('session.create'); // auth

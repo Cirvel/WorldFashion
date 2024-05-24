@@ -16,5 +16,12 @@ class Transaction extends Model
         'no_telp',
         'amount',
         'total',
+        'confirmed',
     ];
+
+    public function fk_user_id()
+    {
+        /* Get all data from user */
+        return $this->belongsTo(User::class,'id');
+    }
 }

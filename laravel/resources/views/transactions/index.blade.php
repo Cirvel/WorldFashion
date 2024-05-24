@@ -69,7 +69,7 @@
                 @foreach ( $transactions as $transaction )
                     <tr>
                         <td scope="row">{{ $transaction->id }}</td>
-                        <td>{{ $transaction->user_id->name }}</td>
+                        <td>{{ $transaction->fk_user_id->name }}</td>
                         <td>
                             <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('transactions.destroy', ['transaction' => $transaction]) }}" method="POST">
                                 <a href="{{ route('transactions.edit', ['transaction' => $transaction]) }}" class="text-decoration-none">

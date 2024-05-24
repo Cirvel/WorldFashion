@@ -29,32 +29,56 @@
                     </a>
                 </div>
             </div>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" name="name" id="name"
-                title="Original value: {{ $user->name }}"
-                value="{{ $user->name }}"
-                required>
-            </div>
-            {{-- <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="text" class="form-control" name="password" id="password"\
-                title="Original value: {{ $user->password }}"
-                value="{{ $user->password }}"
-                required>
-            </div>   --}}
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com"
-                title="Original value: {{ $user->email }}"
-                value="{{ $user->email }}"
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" name="title" id="title"
+                title="Original value: {{ $event->title }}"
+                value="{{ $event->title }}"
                 required>
             </div>
             <div class="mb-3">
-                <select name="level" id="level" class="form-select">
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
-                </select>
+                <label for="place" class="form-label">Place</label>
+                <input type="text" class="form-control" name="place" id="place"
+                title="Original value: {{ $event->place }}"
+                value="{{ $event->place }}"
+                required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" id="description" cols="30" rows="10" class="form-control"
+                title="Original value: {{ $event->description }}"required>
+                {{ $event->description }}
+            </textarea>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" name="start_date" id="start_date" placeholder=""
+                title="Original value: {{ $event->start_date }}"
+                value="{{ $event->start_date }}"
+                required>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" name="end_date" id="end_date" placeholder=""
+                title="Original value: {{ $event->end_date }}"
+                value="{{ $event->end_date }}"
+                required>
+            </div>
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <textarea name="location" id="location" cols="30" rows="2" class="form-control"
+                title="Original value: {{ $event->description }}"required>
+                {{ $event->description }}
+            </textarea>
             </div>
             
             <div>

@@ -62,28 +62,29 @@
     position: relative;
     width: 100%;
 }
-.image-container img {
+.image-container .video-bg {
     width: 100%;
     height: auto;
 }
 .text-overlay {
     position: absolute;
-    top: 50%;
-    left: 35%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 10%;
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
     color: white;
     text-align: left;
 }
 .overlay_header {
-    width: 100%; /* Adjust width as needed */
-    padding: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Optional: text shadow */
-    font-size: 6em;
+    font-size: calc(4vw + 3rem); /* Responsive font size */
 }
 .overlay_desc {
-    width: 90%; /* Adjust width as needed */
-    padding: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Optional: text shadow */
+    font-size: calc(1vw + 1rem); /* Responsive font size */
+    width: 64%;
 }
 
 /* News */
@@ -143,4 +144,43 @@
 }
 footer {
     margin-top: 20px;
+}
+
+/* Login/Signin Style */
+.login-container {
+    min-height: 100vh;
+}
+.login-image {
+    padding: 0;
+    height: 100vh; /* Ensure the image column takes the full height of the viewport */
+}
+.login-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container without distortion */
+}
+.login-form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Ensure the form column takes the full height of the viewport */
+}
+.login-form {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+.login-form .form-control {
+    margin-bottom: 1rem;
+}
+.login-form button {
+    width: 100%;
+    margin-top: 1rem;
+}
+.login-form .additional-links {
+    margin-top: 1rem;
+}
+.login-form img.user-icon {
+    width: 50%; /* Adjust the size of the user icon */
+    margin-bottom: 1.5rem; /* Add space below the user icon */
 }

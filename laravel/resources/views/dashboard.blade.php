@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Hamburger Sidebar</title>
+    <title>User Dashboard</title>
+    <!-- Bootstrap Link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -14,12 +16,12 @@
 
 <body class="default_color">
    <!-- Sidebar -->
-   <nav class="navbar navbar-dark bg-dark">
+   <nav class="navbar navbar-dark bg-dark d-flex flex-nowrap">
         <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <button class="navbar-toggler" ty   pe="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand ms-3 img-fluid" href="#"><img style="max-width: 30%;" src="Img/world_fashion_logo.jpg" alt="Logo"></a>
+            <a class="navbar-brand img-fluid" href="#"><img style="max-width: 30%;" src="Img/world_fashion_logo.jpg" alt="Logo"></a>
         </div>
     </nav>
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
@@ -91,8 +93,8 @@
             </div>
         </div>
     </div>
-    <!-- Header Video -->
-    <div class="container-fluid gx-0">
+     <!-- Header Video -->
+     <div class="container-fluid gx-0">
         <div class="image-container">
             <div class="ratio ratio-16x9">
                 <video class="video-bg" src="{{ asset('video/fashionshow.mp4') }}" autoplay loop muted playsinline></video>
@@ -104,7 +106,7 @@
                     Abu Dhabi
                 </div>
                 <div class="overlay_desc">
-                    <p class="fs-2">Prepare to be dazzled as top designers showcase their latest collections on the runway. Discover the hottest trends and find inspiration for your wardrobe. Immerse yourself in the glamorous atmosphere, mingle with industry insiders, and experience the excitement of the fashion world firsthand.</p>
+                    <p>Prepare to be dazzled as top designers showcase their latest collections on the runway. Discover the hottest trends and find inspiration for your wardrobe. Immerse yourself in the glamorous atmosphere, mingle with industry insiders, and experience the excitement of the fashion world firsthand.</p>
                 </div>
             </div>
         </div>
@@ -113,19 +115,13 @@
     <div class="container">
         <div class="row mt-3 mb-5">
             <div class="col-4">
-                <video class="video-bg img-fluid" controls>
-                    <source src="{{ asset('video/smallvid1.mp4') }}" type="video/mp4">
-                </video>
+                <video class="video-bg img-fluid" src="{{ asset('video/smallvid1.mp4') }}" controls></video>
             </div>
             <div class="col-4">
-                <video class="video-bg img-fluid" controls>
-                    <source src="{{ asset('video/smallvid2.mp4') }}" type="video/mp4">
-                </video>
+                <video class="video-bg img-fluid" src="{{ asset('video/smallvid2.mp4') }}" controls></video>
             </div>
             <div class="col-4">
-                <video class="video-bg img-fluid" controls>
-                    <source src="{{ asset('video/smallvid3.mp4') }}" type="video/mp4">
-                </video>
+                <video class="video-bg img-fluid" src="{{ asset('video/smallvid3.mp4') }}" controls></video>
             </div>
         </div>
     </div>
@@ -137,25 +133,25 @@
                 <h3>19 OCT, 18.00</h3>
             </div>
         </div>
-        <div id="countdown" class="row text-center d-flex justify-content-center">
+        <div id="countdown" class="row text-center d-flex justify-content-center pt-3 pb-3">
             <div class="col-2">
-                <h1>-</h1>
+                <h1>00</h1>
                 <h3>Days</h3>
             </div>
             <div class="col-2">
-                <h1>-</h1>
+                <h1>20</h1>
                 <h3>Hrs</h3>
             </div>
             <div class="col-2">
-                <h1>-</h1>
+                <h1>22</h1>
                 <h3>Min</h3>
             </div>
             <div class="col-2">
-                <h1>-</h1>
+                <h1>10</h1>
                 <h3>Sec</h3>
             </div>
         </div>
-        <div class="row d-flex justify-content-center mt-2 mb-2">
+        <div class="row d-flex justify-content-center mt-2 mb-2 pt-3 pb-3">
             <div class="col-6 text-center">
                 <b><p>Don't miss this opportunity to indulge your passion for fashion and be a part of an unforgettable event!</p></b>
             </div>
@@ -179,7 +175,7 @@
                 </div>
             </div>
             <div class="col">
-                <p class="fs-5">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum </p>
+                <p class="fs-5 overlay_desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum </p>
             </div>
         </div>
     </div>
@@ -204,14 +200,14 @@
                             <ul class="list-unstyled">
                                 <li><a href="#" class="cw">Privacy Policy</a></li>
                                 <li><a href="#" class="cw">Return And Refund Policy</a></li>
-                                <li><a href="#" class="cw">Customer Service</a></li>
-                                <li><a href="#" class="cw">Feedback</a></li>
+                                <li><a href="{{ route('booking') }}" class="cw">Customer Service</a></li>
+                                <li><a href="{{ route('session.logout') }}" class="cw">Feedback</a></li>
                             </ul>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <h3 class="cw pb-2 border-bottom">The Company</h3>
                             <ul class="list-unstyled">
-                                <li><a href="#" class="cw">About</a></li>
+                                <li><a href="{{ route('dashboard.admin') }}" class="cw">About</a></li>
                                 <li><a href="#" class="cw">Careers</a></li>
                                 <li><a href="#" class="cw">Store Locator</a></li>
                             </ul>
@@ -221,7 +217,7 @@
                         <div class="col-lg-6 mb-3">
                             <h3 class="cw pb-2 border-bottom mt-3">More</h3>
                             <ul class="list-unstyled">
-                                <li><a href="{{ route('dashboard.admin') }}" class="cw">Franchise</a></li>
+                                <li><a href="#" class="cw">Franchise</a></li>
                             </ul>
                         </div>
                         <div class="col-lg-6 mb-3">
@@ -239,10 +235,10 @@
             </div>
         </div>
     </footer>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script type="text/javascript">
         countdownTimer();
     </script>
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

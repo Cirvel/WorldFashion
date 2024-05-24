@@ -21,6 +21,7 @@ Artisan::command('dummy_data', function () {
     $userAdmin['name'] = strip_tags("adMinX");
     $userAdmin['password'] = bcrypt("Never4get");
     $userAdmin['email'] = strip_tags("admin@gmail.com");
+    $userAdmin['no_telp'] = "1080-2307-821";
     $userAdmin['level'] = strip_tags("admin");
     User::create($userAdmin);
     
@@ -28,6 +29,7 @@ Artisan::command('dummy_data', function () {
     $userBasic['name'] = strip_tags("4Clients");
     $userBasic['password'] = bcrypt("Never4get2");
     $userBasic['email'] = strip_tags("user@gmail.com");
+    $userBasic['no_telp'] = "3010-7405-396";
     $userBasic['level'] = strip_tags("user");
     User::create($userBasic);
 

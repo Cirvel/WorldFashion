@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('amount');
             // $table->integer('price');
             $table->integer('total');
-            $table->boolean ('confirmed');
+            $table->boolean ('confirmed')->default('0');
             $table->timestamps();
         });
     }

@@ -29,6 +29,15 @@
                         </a>
                     </div>
                 </div>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input type="text" class="form-control" name="name" id="name" required>
@@ -40,6 +49,10 @@
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com" required>
+                </div>
+                <div class="mb-3">
+                    <label for="no_telp" class="form-label">No. Telp</label>
+                    <input type="text" class="form-control" name="no_telp" id="no_telp" placeholder="XXXX-XXXX-XXX" required>
                 </div>
                 <div class="mb-3">
                     <select name="level" id="level" class="form-select">

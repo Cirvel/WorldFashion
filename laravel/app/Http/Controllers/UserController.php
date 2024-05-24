@@ -36,8 +36,9 @@ class UserController extends Controller
     {
         // Validate data
         $pField = $request->validate([
-            'name' => ['required','min:4','max:20'],
-            'password' => ['required','min:4','max:100'],
+            'name' => ['required','min:1','max:15'],
+            'password' => ['required','min:1','max:8'],
+            'no_telp' => ['required','min:10','max:13'],
             'email' => ['required','email'],
             'level',
         ]);
@@ -96,17 +97,19 @@ class UserController extends Controller
     {
         // Validate data before updating
         $pField = $request->validate([
-            'name' => ['required','min:4','max:20'],
+            'name' => ['required','min:1','max:15'],
+            'no_telp' => ['required','min:10','max:13'],
             'email' => ['required','email'],
             'level',
         ]);
 
-        $request['name'] = strip_tags($pField['name']);
-        $request['email'] = strip_tags($pField['email']);
+        $pField['name'] = strip_tags($pField['name']);
+        $pField['email'] = strip_tags($pField['email']);
 
         User::findOrFail($id)->update([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $pField['name'],
+            'email' => $pField['email'],
+            'no_telp' => $pField['no_telp'],
             'level' => $request->get('level'),
         ]);
         
@@ -147,6 +150,7 @@ class UserController extends Controller
             // Ready output variable for 
             $output = '';
             if (count($data)>0){
+                /* Header */
                 $output = '
                 <table class="table table-striped" id="search_list">
                     <thead>
@@ -162,6 +166,7 @@ class UserController extends Controller
                     <tbody>
                 ';
                 foreach($data as $user){
+                    /* Data */
                     $output .=
                     '<tr>
                         <td scope="row">'. $user->id .'</td>
@@ -207,6 +212,7 @@ class UserController extends Controller
                 </table>
                 ';
             } else {
+                /* No search result */
                 $output = '
                 <table class="table table-striped" id="search_list">
                     <thead>

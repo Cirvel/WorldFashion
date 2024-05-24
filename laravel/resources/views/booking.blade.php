@@ -2,7 +2,7 @@
 
 <html lang="en" data-bs-theme="auto">
     <head>
-        <title>Booking</title>    
+        <title>Booking</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -18,9 +18,14 @@
     <!-- Body -->
     <div class="mb-3"></div>
         <div class="container-md form-control mx-auto p-2">
+            @if ($transaction)
+            <form class="" method="POST" action="{{ route('transactions.update', $transaction->id) }}">
+                @method('put')
+            @else
             <form class="" method="POST" action="{{ route('transactions.store') }}">
-                @csrf
                 @method('post')
+            @endif
+                @csrf
                 <div class="mb-3 d-flex">
                     <h3 class="form-label">BOOK TICKET</h3>
                     <div class="ms-auto">
@@ -46,30 +51,35 @@
                 </div>
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" name="name" id="name" required>
+                    <input type="text" class="form-control" name="name" id="name" value="{{ auth()->user()->name }}" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="no_telp" class="form-label">No. Telp</label>
-                    <input type="text" class="form-control" name="no_telp" id="no_telp" placeholder="XXXX-XXXX-XXX" required>
-                </div>
-                <div class="mb-3">
-                    <label for="amount" class="form-label">Amount</label>
-                    <input type="number" class="form-control" name="amount" id="amount" onchange="calculateTotal()" required>
-                </div>
-                <div class="mb-3">
-                    <label for="total" class="form-label">Total</label>
-                    <input type="number" class="form-control" name="total" id="total" readonly>
+                    <input type="text" class="form-control" name="no_telp" id="no_telp" value="{{ auth()->user()->no_telp }}" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com" required>
+                    <input type="email" class="form-control" name="email" id="email" value="{{ auth()->user()->email }}" readonly>
                 </div>
-                <div class="mb-3">
-                    <select name="level" id="level" class="form-select">
-                        <option value="user" selected>User</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
+                @if ($transaction)
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" id="amount" value="{{ $transaction->amount }}" onchange="calculateTotal()" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total</label>
+                        <input type="number" class="form-control" name="total" id="total" value="{{ $transaction->total }}" readonly>
+                    </div>
+                @else
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" id="amount" value="" onchange="calculateTotal()" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total</label>
+                        <input type="number" class="form-control" name="total" id="total" value="" readonly>
+                    </div>
+                @endif
                 
                 <div>
                     <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>
