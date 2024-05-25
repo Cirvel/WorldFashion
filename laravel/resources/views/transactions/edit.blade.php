@@ -2,7 +2,7 @@
 
 <html lang="en" data-bs-theme="auto">
     <head>
-        <title>Users</title>    
+        <title>Booking</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -17,56 +17,82 @@
     <body class="m-2">
     <!-- Body -->
     <div class="mb-3"></div>
-    <div class="container-md form-control mx-auto p-2">
-        <form class="" method="POST" action="{{ route('events.update',$event->id) }}">
-            @csrf
-            @method('put')
-            <div class="mb-3 d-flex">
-                <h3 class="form-label">EDIT USER</h3>
-                <div class="ms-auto">
-                    <a href="{{ route('events.index') }}">
-                        <button type="button" class="btn btn-close"></button>
-                    </a>
+        <div class="container-md form-control mx-auto p-2">
+            @if (isset($transaction))
+            <form class="" method="POST" action="{{ route('transactions.update', $transaction->id) }}">
+                @method('put')
+            @else
+            <form class="" method="POST" action="{{ route('transactions.store') }}">
+                @method('post')
+            @endif
+                @csrf
+                <div class="mb-3 d-flex">
+                    <h3 class="form-label">EDIT TRANSACTION</h3>
+                    <div class="ms-auto">
+                        <a href="{{ route('transactions.index') }}">
+                            <button type="button" class="btn btn-close"></button>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" name="name" id="name"
-                title="Original value: {{ $user->name }}"
-                value="{{ $user->name }}"
-                required>
-            </div>
-            {{-- <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="text" class="form-control" name="password" id="password"\
-                title="Original value: {{ $user->password }}"
-                value="{{ $user->password }}"
-                required>
-            </div>   --}}
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" placeholder="example123@here.com"
-                title="Original value: {{ $user->email }}"
-                value="{{ $user->email }}"
-                required>
-            </div>
-            <div class="mb-3">
-                <select name="level" id="level" class="form-select">
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            
-            <div>
-                <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>
-                <button class="btn btn-success d-md-none d-inline" type="submit"><i class="fas fa-check"></i></button>
-                <button class="btn btn-danger d-md-inline d-none" type="reset">Clear</button>
-                <button class="btn btn-danger d-md-none d-inline" type="reset"><i class="fas fa-trash"></i></button>
-            </div>
-        </form>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" name="price" id="price" value="{{ $price }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" name="user_id" id="user_id" value="{{ $transaction->id }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" id="name" value="{{ $transaction->name }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="no_telp" class="form-label">No. Telp</label>
+                    <input type="text" class="form-control" name="no_telp" id="no_telp" value="{{ $transaction->no_telp }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" value="{{ $transaction->email }}" readonly>
+                </div>
+                @if (isset($transaction))
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" id="amount" value="{{ $transaction->amount }}" onchange="calculateTotal()" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total</label>
+                        <input type="number" class="form-control" name="total" id="total" value="{{ $transaction->total }}" readonly>
+                    </div>
+                @else
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" id="amount" value="" onchange="calculateTotal()" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total</label>
+                        <input type="number" class="form-control" name="total" id="total" value="" readonly>
+                    </div>
+                @endif
+                
+                <div>
+                    <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>
+                    <button class="btn btn-success d-md-none d-inline" type="submit"><i class="fas fa-check"></i></button>
+                    <button class="btn btn-danger d-md-inline d-none" type="reset">Clear</button>
+                    <button class="btn btn-danger d-md-none d-inline" type="reset"><i class="fas fa-trash"></i></button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 
+<script src="{{ asset('js/app.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>

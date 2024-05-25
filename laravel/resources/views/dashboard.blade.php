@@ -135,19 +135,19 @@
         </div>
         <div id="countdown" class="row text-center d-flex justify-content-center pt-3 pb-3">
             <div class="col-2">
-                <h1>00</h1>
+                <h1>04</h1>
                 <h3>Days</h3>
             </div>
             <div class="col-2">
-                <h1>20</h1>
+                <h1>14</h1>
                 <h3>Hrs</h3>
             </div>
             <div class="col-2">
-                <h1>22</h1>
+                <h1>20</h1>
                 <h3>Min</h3>
             </div>
             <div class="col-2">
-                <h1>10</h1>
+                <h1>28</h1>
                 <h3>Sec</h3>
             </div>
         </div>

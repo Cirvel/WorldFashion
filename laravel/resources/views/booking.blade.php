@@ -18,7 +18,7 @@
     <!-- Body -->
     <div class="mb-3"></div>
         <div class="container-md form-control mx-auto p-2">
-            @if ($transaction)
+            @if (isset($transaction))
             <form class="" method="POST" action="{{ route('transactions.update', $transaction->id) }}">
                 @method('put')
             @else
@@ -61,7 +61,7 @@
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" id="email" value="{{ auth()->user()->email }}" readonly>
                 </div>
-                @if ($transaction)
+                @if (isset($transaction))
                     <div class="mb-3">
                         <label for="amount" class="form-label">Amount</label>
                         <input type="number" class="form-control" name="amount" id="amount" value="{{ $transaction->amount }}" onchange="calculateTotal()" required>

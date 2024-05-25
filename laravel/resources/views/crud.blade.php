@@ -29,11 +29,11 @@
                 Users
             </div>
         </a>
-        <a href="{{ route('events.index') }}">
+        {{-- <a href="{{ route('events.index') }}">
             <div class="container-fluid btn btn-outline-primary mb-2">
                 Events
             </div>
-        </a>
+        </a> --}}
         <a href="{{ route('transactions.index') }}">
             <div class="container-fluid btn btn-outline-primary mb-2">
                 Transactions

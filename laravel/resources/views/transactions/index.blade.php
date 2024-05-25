@@ -29,16 +29,18 @@
         {{-- <form action=""> --}}
             <div class="d-flex flex-wrap flex-grow-1 gap-2">
                 <div class="d-flex flex-grow-1">
-                    <input class="form-control" type="text" name="search" id="search" title="Search engine">
-                    <button type="submit" class="btn btn-info ms-2" name="search-button" id="search-button"><i class="fas fa-search"></i></button>
+                    <input class="form-control" onchange="search()" type="text" name="search" id="search" title="Search engine">
                 </div>
                 <div class="d-md-flex d-flex flex-grow-1 gap-2">
                     <select class="form-select" name="filter" id="filter" title="Filter">
                         <option value="id">#</option>
-                        <option value="title">Title</option>
-                        <option value="place">Place</option>
-                        <option value="description">Description</option>
-                        <option value="location">Location</option>
+                        <option value="name">Name</option>
+                        <option value="email">Email</option>
+                        <option value="no_telp">No. Telp</option>
+                        <option value="amount">Amount</option>
+                        <option value="total">Total</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="created_at">Bought Date</option>
                     </select>
                     <select class="form-select" name="sort" id="sort" title="Sort Order">
                         <option value="asc">Ascending</option>
@@ -55,21 +57,36 @@
                 <tr>
                     <th scope="col" style="width: 4ch;">#</th>
                     <th scope="col" style="width: 20ch;">User</th>
-                    <th scope="col" style="width: 20ch;">Name</th>
                     <th scope="col" style="width: 20ch;">Email</th>
                     <th scope="col">No Telp</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Total</th>
                     <th scope="col">Confirmed</th>
                     <th scope="col">Bought Date</th>
-                    <th scope="col" style="width: 5ch;">Action</th>
+                    <th scope="col" style="width: 12ch;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ( $transactions as $transaction )
                     <tr>
                         <td scope="row">{{ $transaction->id }}</td>
-                        <td>{{ $transaction->fk_user_id->name }}</td>
+                        <td>{{ $transaction->name }}</td>
+                        <td>{{ $transaction->email }}</td>
+                        <td>{{ $transaction->no_telp }}</td>
+                        <td>{{ $transaction->amount }}</td>
+                        <td>{{ $transaction->total }}</td>
+                        @if ($transaction->confirmed)
+                        <td class="text-success">
+                            <i class="fa-regular fa-circle-check" aria-hidden="true"></i><span class="d-none d-md-inline">
+                                True</span>
+                        </td>
+                        @else
+                        <td class="text-danger">
+                            <i class="fa-regular fa-circle-xmark" aria-hidden="true"></i><span class="d-none d-md-inline">
+                                False</span>
+                        </td>
+                        @endif
+                        <td>{{ $transaction->created_at }}</td>
                         <td>
                             <form onsubmit="return confirm('Are you sure you want to delete this data?')" action="{{ route('transactions.destroy', ['transaction' => $transaction]) }}" method="POST">
                                 <a href="{{ route('transactions.edit', ['transaction' => $transaction]) }}" class="text-decoration-none">
@@ -92,21 +109,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 
 <script>
-    $(document).ready(function(){
-        $('#search-button').on('click',function(){
-            var query = $('#search').val(); // Get search bar value
-            var filter = $('#filter').val(); // Get selected filter value
-            var sort = $('#sort').val(); // Get selected sort value
-            $.ajax({ // Ajax script
-                url: "{{ route('events.search') }}", // Route
-                type: "GET", // Method
-                data: {'search':query,filter,sort}, 
-                success:function(data){ // If process has no error..
-                    $('#search_list').html(data); // Replace row display for data table
-                }
-            })
+    function search()
+    {
+        var query = $('#search').val(); // Get search bar value
+        var filter = $('#filter').val(); // Get selected filter value
+        var sort = $('#sort').val(); // Get selected sort value
+        $.ajax({ // Ajax script
+            url: "{{ route('transactions.search') }}", // Route
+            type: "GET", // Method
+            data: {'search':query,filter,sort}, 
+            success:function(data){ // If process has no error..
+                $('#search_list').html(data); // Replace row display for data table
+            }
         })
-    })
+    }
 </script>
 
 </html>

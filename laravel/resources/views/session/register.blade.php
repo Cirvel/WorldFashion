@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>Sign In</title>
     <!-- Bootstrap Link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Custom CSS Link -->
@@ -13,12 +13,12 @@
 </head>
 <body>
 <div class="container-fluid login-container">
-        <div class="row w-100">
-            <div class="col-md-6 d-none d-md-block login-image">
+        <div class="row">
+            <div class="m-auto col-md-6 d-none d-md-block login-image">
                 <img src="/Img/bg.jpg" alt="Login Image">
             </div>
             <div class="col-md-6 d-flex align-items-center justify-content-center">
-                <div class="login-form">
+                <div class="login-form my-3">
                     <h2 class="mb-4">Sign In</h2>
                     @if ($errors->any())
                         <div class="alert alert-danger">

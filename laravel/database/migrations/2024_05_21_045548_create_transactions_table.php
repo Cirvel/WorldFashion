@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -18,8 +19,8 @@ return new class extends Migration
             $table->string('email');
             $table->string('no_telp');
             $table->integer('amount');
-            // $table->integer('price');
             $table->integer('total');
+            $table->integer('confirmation_code')->default(Str::random(255))->unique();
             $table->boolean ('confirmed')->default('0');
             $table->timestamps();
         });

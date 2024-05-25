@@ -10,15 +10,15 @@ class AuthController extends Controller
     public function isLoggedIn()
     /* Check if user is logged in or back to the login */
     {
-        if(!auth()->id()){
-            return redirect()->route('session.login');
+        if(!auth()->check()){
+            return redirect()->route('session.login')->withErrors('Please log in');
         }
     }
     
     public function isAdmin()
     /* Check if user is an admin or back to the dashboard, also doubles as isLoggedIn */
     {
-        if(!auth()->id()){
+        if(!auth()->check()){
             return redirect()->route('session.login');
         }elseif(auth()->user()->level!="admin"){
             return redirect()->route('dashboard.main');
@@ -94,10 +94,12 @@ class AuthController extends Controller
         // Check for account with same username and password together
         if (auth()->attempt(['name' => $validateField['name'], 'password' => $validateField['password'] ])) {
             $request->session()->regenerate();
-            return redirect("/")->with("success","Account successfully logged in.");
+            return redirect()->route('dashboard.main')->with("success","Account successfully logged in.");
+        } else
+        {
+            return redirect()->route('session.login')->withErrors(['msg' => 'Incorrect username or password, please try again.']);
         }
         
-        return redirect()->route('session.login')->with("error","Invalid username or password.");
     }
 
     /**

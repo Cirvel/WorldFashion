@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>Login</title>
     <!-- Bootstrap Link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Custom CSS Link -->
@@ -13,25 +13,26 @@
 </head>
 <body>
     <div class="container-fluid login-container">
-        <div class="row g-0">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div class="col-12 col-md-6 login-image">
+        <div class="row">
+            <div class="m-auto col-md-6 d-none d-md-block login-image">
                 <img src="/Img/bg.jpg" alt="Login Image">
             </div>
             <div class="col-12 col-md-6 login-form-container d-flex justify-content-center flex-column">
                 <div class="login-form">
                     <form method="POST" action="{{ route('session.auth') }}">
+                        @csrf
                         <img src="https://img.icons8.com/ios-filled/100/000000/user.png" alt="User Icon" class="user-icon">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <input type="text" name="name" class="form-control" placeholder="Name">
-                        <input type="password" name="name" class="form-control" placeholder="Password">
+                        <input type="password" name="password" class="form-control" placeholder="Password">
                         <button type="submit" class="btn btn-primary">Login</button>
                         <div class="additional-links">
                             <p>No account? <a href="{{ route('session.register') }}">Sign in</a></p>

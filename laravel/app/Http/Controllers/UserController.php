@@ -214,18 +214,7 @@ class UserController extends Controller
             } else {
                 /* No search result */
                 $output = '
-                <table class="table table-striped" id="search_list">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width: 10ch;">#</th>
-                            <th scope="col" style="width: 25ch">Name</th>
-                            <th scope="col">Description</th>
-                            <th scope="col" style="width: 15ch;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>    
+                <h5 class="text-center mt-5">No data available</h5> 
                 ';
             }
 

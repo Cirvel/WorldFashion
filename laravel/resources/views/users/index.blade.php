@@ -29,8 +29,8 @@
         {{-- <form action=""> --}}
             <div class="d-flex flex-wrap flex-grow-1 gap-2">
                 <div class="d-flex flex-grow-1">
-                    <input class="form-control" type="text" name="search" id="search" title="Search engine">
-                    <button type="submit" class="btn btn-info ms-2" name="search-button" id="search-button"><i class="fas fa-search"></i></button>
+                    <input class="form-control" onchange="search()" type="text" name="search" id="search" title="Search engine">
+                    {{-- <button type="submit" class="btn btn-info ms-2" name="search-button" id="search-button"><i class="fas fa-search"></i></button> --}}
                 </div>
                 <div class="d-md-flex d-flex flex-grow-1 gap-2">
                     <select class="form-select" name="filter" id="filter" title="Filter">
@@ -109,21 +109,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 
 <script>
-    $(document).ready(function(){
-        $('#search-button').on('click',function(){
-            var query = $('#search').val(); // Get search bar value
-            var filter = $('#filter').val(); // Get selected filter value
-            var sort = $('#sort').val(); // Get selected sort value
-            $.ajax({ // Ajax script
-                url: "{{ route('users.search') }}", // Route
-                type: "GET", // Method
-                data: {'search':query,filter,sort}, 
-                success:function(data){ // If process has no error..
-                    $('#search_list').html(data); // Replace row display for data table
-                }
-            })
+    function search()
+    {
+        var query = $('#search').val(); // Get search bar value
+        var filter = $('#filter').val(); // Get selected filter value
+        var sort = $('#sort').val(); // Get selected sort value
+        $.ajax({ // Ajax script
+            url: "{{ route('users.search') }}", // Route
+            type: "GET", // Method
+            data: {'search':query,filter,sort}, 
+            success:function(data){ // If process has no error..
+                $('#search_list').html(data); // Replace row display for data table
+            }
         })
-    })
+    }
 </script>
 
 </html>

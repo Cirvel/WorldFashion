@@ -25,7 +25,8 @@ Route::get('admin', function () {
 
 /* Ticket */
 Route::get('booking', [TransactionController::class, 'create'])->name('booking');
-Route::get('qrcode', [TransactionController::class, 'alreadyBooked'])->name('qrcode');
+Route::get('payment', [TransactionController::class, 'show'])->name('payment');
+Route::get('rebooking', [TransactionController::class, 'rebooking'])->name('rebooking');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
