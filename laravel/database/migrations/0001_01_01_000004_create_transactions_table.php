@@ -15,12 +15,13 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id()->primary();
             $table->foreignId('user_id')->references('id')->on('users');
+            $table->foreignId('ticket_id')->references('id')->on('tickets');
             $table->string('name');
             $table->string('email');
             $table->string('no_telp');
             $table->integer('amount');
             $table->integer('total');
-            $table->integer('confirmation_code')->default(Str::random(255))->unique();
+            $table->string('code')->unique();
             $table->boolean ('confirmed')->default('0');
             $table->timestamps();
         });

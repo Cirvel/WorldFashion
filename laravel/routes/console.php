@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -33,7 +33,14 @@ Artisan::command('dummy_data', function () {
     $userBasic['level'] = strip_tags("user");
     User::create($userBasic);
 
+    // Prepare ticket
+    $dataTicket['name'] = strip_tags("First Class"); // varchar
+    $dataTicket['price'] = 100000; // integer
+    $dataTicket['stock'] = 5; // integer
+    Ticket::create($dataTicket);
+
     // Prepare transaction from user
+    $dataTransaction['ticket_id'] = 1; // foreign key
     $dataTransaction['user_id'] = 2; // foreign key
     $dataTransaction['name'] = strip_tags("4Clients"); // varchar
     $dataTransaction['email'] = strip_tags("user@gmail.com"); // text
@@ -41,6 +48,7 @@ Artisan::command('dummy_data', function () {
     $dataTransaction['confirmed'] = false; // varchar
     $dataTransaction['amount'] = 3; // integer
     $dataTransaction['total'] = 150000; // integer
+    $dataTransaction['code'] = Str::random(13); // integer
     Transaction::create($dataTransaction);
 
     $this->comment("dummy_data Success");

@@ -52,7 +52,7 @@ class UserController extends Controller
         User::create($pField);
 
         // Returns to index
-        return redirect()->route('users.index')->with('success','Data successfully stored');
+        return redirect()->route('users.index')->with(['success' => 'Data successfully stored']);
     }
 
     /**
@@ -114,7 +114,7 @@ class UserController extends Controller
         ]);
         
         // Returns user to index
-        return redirect()->back()->with('success','Data successfully updated');
+        return redirect()->back()->with(['success' => 'Data successfully updated']);
     }
 
     /**
@@ -131,7 +131,7 @@ class UserController extends Controller
         };
 
         // Refresh page
-        return redirect()->back()->with('success','Data successfully destroyed');
+        return redirect()->back()->with(['success' => 'Data successfully destroyed']);
     }
 
     

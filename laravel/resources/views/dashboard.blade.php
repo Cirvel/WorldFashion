@@ -208,7 +208,7 @@
                             <h3 class="cw pb-2 border-bottom">The Company</h3>
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('dashboard.admin') }}" class="cw">About</a></li>
-                                <li><a href="#" class="cw">Careers</a></li>
+                                <li><a href="{{ route('transactions.show',2) }}" class="cw">Careers</a></li>
                                 <li><a href="#" class="cw">Store Locator</a></li>
                             </ul>
                         </div>

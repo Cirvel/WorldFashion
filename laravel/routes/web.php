@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -25,16 +26,18 @@ Route::get('admin', function () {
 
 /* Ticket */
 Route::get('booking', [TransactionController::class, 'create'])->name('booking');
-Route::get('payment', [TransactionController::class, 'show'])->name('payment');
-Route::get('rebooking', [TransactionController::class, 'rebooking'])->name('rebooking');
+Route::get('rebooking/{id}', [TransactionController::class, 'rebooking'])->name('rebooking');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
 Route::get('users.search', [UserController::class, 'search'])->name('users.search');
-Route::resource('events',    EventController::class);
-Route::get('events.search', [EventController::class, 'search'])->name('events.search');
+// Route::resource('events',    EventController::class);
+// Route::get('events.search', [EventController::class, 'search'])->name('events.search');
+Route::resource('tickets',    TicketController::class);
+Route::get('tickets.search', [TicketController::class, 'search'])->name('tickets.search');
 Route::resource('transactions',    TransactionController::class);
 Route::get('transactions.search', [TransactionController::class, 'search'])->name('transactions.search');
+Route::get('transactions.ticket', [TransactionController::class, 'ticket'])->name('transactions.ticket');
 
 /* Session */
 Route::get('/login',    [AuthController::class, 'index'])->name('session.login'); // main page

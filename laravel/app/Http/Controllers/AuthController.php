@@ -30,7 +30,7 @@ class AuthController extends Controller
      */
     public function index()
     {
-        if(auth()->id()){ // If already auth, redirect to dashboard
+        if(auth()->check()){ // If already auth, redirect to dashboard
             return redirect()->route('dashboard.main');
         }
 
@@ -42,7 +42,7 @@ class AuthController extends Controller
      */
     public function index_2()
     {
-        if(auth()->id()){ // If already auth, redirect to dashboard
+        if(auth()->check()){ // If already auth, redirect to dashboard
             return redirect()->route('dashboard.main');
         }
 
@@ -68,7 +68,7 @@ class AuthController extends Controller
         auth()->login($newUser);
 
         // Redirect user to Home
-        return redirect('/')->with('success','Account successfuly registered.');
+        return redirect('/')->with(['success' => 'Account successfuly registered.']);
     }
     
     /**
@@ -97,7 +97,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard.main')->with("success","Account successfully logged in.");
         } else
         {
-            return redirect()->route('session.login')->withErrors(['msg' => 'Incorrect username or password, please try again.']);
+            return redirect()->route('session.login')->withErrors(['msg' => 'Incorrect username or password']);
         }
         
     }
@@ -138,6 +138,6 @@ class AuthController extends Controller
         auth()->login($newUser);
 
         // Redirect user to Home
-        return redirect()->route('dashboard.main')->with('success','Account successfuly registered.');
+        return redirect()->route('dashboard.main')->with(['success' => 'Account successfuly registered.']);
     }
 }

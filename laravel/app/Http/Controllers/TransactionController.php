@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ticket;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,8 @@ class TransactionController extends Controller
          */
         return 100000;
     }
-    public function generateStr(int $length = 16){
+    public function generateStr(int $length = 16)
+    {
         /**
          * Generates a random line of string
          */
@@ -44,7 +46,7 @@ class TransactionController extends Controller
         $transaction = Transaction::all();
 
         return app(AuthController::class)->isAdmin() ??
-        view('transactions.index', ['transactions' => $transaction]);
+            view('transactions.index', ['transactions' => $transaction]);
     }
 
     /**
@@ -52,21 +54,24 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        $price = $this->price();
-        
-        $id = auth()->id();
-        $correct = DB::table('transactions')
-        ->where('user_id', '=', $id)
-        ->get();
+        $tickets = Ticket::all();
 
-        if (auth()->check() && $correct){
-            return redirect()->route('qrcode')->with(['msg' => 'You already booked']);
-        }
-        
         return app(AuthController::class)->isLoggedIn() ??
-        view('booking', [
-            'price' => $price
-        ]);
+            view('booking.booking', [
+                'tickets' => $tickets
+            ]);
+    }
+
+    /**
+     * Changes the value of hidden price value depending on the ticket selected
+     */
+    public function ticket(Request $request)
+    {
+        if ($request->ajax()) // Check if the request was an ajax
+        {
+            $data = Ticket::where('id', '=', $request->ticket)->get()->first();
+            return $data->price;
+        }
     }
 
     /**
@@ -77,51 +82,47 @@ class TransactionController extends Controller
         /* User paying method */
 
         $pField = $request->validate([
+            'ticket_id' => ['required'],
             'user_id' => ['required'],
-            'name' => ['required','max:35'],
-            'email' => ['required','email'],
-            'no_telp' => ['required','min:13','max:13'],
-            'amount' => ['required','integer'],
+            'name' => ['required', 'max:35'],
+            'email' => ['required', 'email'],
+            'no_telp' => ['required', 'min:13', 'max:13'],
+            'amount' => ['required', 'integer'],
             'total' => ['integer'],
         ]);
 
         $pField['name'] = strip_tags($pField['name']);
         $pField['email'] = strip_tags($pField['email']);
         $pField['no_telp'] = strip_tags($pField['no_telp']);
+        $pField['code'] = Str::random(13);
 
         Transaction::create($pField);
 
-        return redirect()->route('dashboard.main')->with('success','ticket successfully purchased');
+        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
     }
 
     /**
      * Display the specified resource.
-     * En Garde Steam
-     * R94720
      */
-    public function show(Transaction $transaction)
+    public function show(String $id)
     {
         /**
-         * If user has already booked a ticket, display the payment details instead
-        */
+         * Display transaction details to user
+         */
+        $transaction = Transaction::findOrFail($id);
 
-        /* Check in transaction if one of the ticket buyer is the same user */
-        $detail = DB::table('transactions')
-        ->where('user_id', '=', auth()->id())
-        ->get()->first();
+        /* If basic user is trying to look up another's payment detail, bring them back to dashboard */
+        if (auth()->user()->level != "admin" ?? $transaction->user_id != auth()->id()) {
+            return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
+        }
 
         $qrcode = $this->generateQr('https://t.ly/cL9S4');
         // $qrcode = $this->generateQr($detail->confirmation_code);
 
-        if($detail)
-        { /* If already booked, display the payment instead */
-            return view('payment', [
-                'transaction' => $detail,
-                'qr_code' => $qrcode,
-            ]);;
-        } else {
-            return redirect()->route('dashboard.main')->with(['msg' => "You haven't booked yet"]);
-        }
+        return view('transactions.show', [
+            'transaction' => $transaction,
+            'qr_code' => $qrcode,
+        ]);
     }
 
     /**
@@ -129,32 +130,38 @@ class TransactionController extends Controller
      */
     public function edit(String $id)
     {
-        $price = $this->price();
-        
-        $transaction = DB::table('transactions')
-        ->where('id', '=', $id)
-        ->get()->first();
-        
+        $transaction = Transaction::findOrFail($id);
+        $tickets = Ticket::all();
+
         return app(AuthController::class)->isLoggedIn() ??
-        view('transactions.edit',[
-            'price' => $price,
-            'transaction' => $transaction
-        ]);
+            view('transactions.edit', [
+                'transaction' => $transaction,
+                'tickets' => $tickets,
+            ]);
     }
-    public function rebooking()
+    /**
+     * Edit transaction lite for user
+     */
+    public function rebooking(String $id)
     {
-        $price = $this->price();
-        
+        $transaction = Transaction::findOrFail($id);
+        $tickets = Ticket::all();
+
+        /* If basic user is trying to look up another's payment detail, bring them back to dashboard */
+        if (auth()->user()->level != "admin" ?? $transaction->user_id != auth()->id()) {
+            return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
+        }
+
         $id = auth()->id();
         $transaction = DB::table('transactions')
-        ->where('user_id', '=', $id)
-        ->get()->first();
-        
+            ->where('user_id', '=', $id)
+            ->get()->first();
+
         return app(AuthController::class)->isLoggedIn() ??
-        view('booking',[
-            'price' => $price,
-            'transaction' => $transaction
-        ]);
+            view('booking.rebooking', [
+                'tickets' => $tickets,
+                'transaction' => $transaction
+            ]);
     }
 
     /**
@@ -165,10 +172,10 @@ class TransactionController extends Controller
         /* User paying method */
 
         $pField = $request->validate([
-            'name' => ['required','max:35'],
-            'email' => ['required','email'],
-            'no_telp' => ['required','max:13'],
-            'amount' => ['required','integer'],
+            'name' => ['required', 'max:35'],
+            'email' => ['required', 'email'],
+            'no_telp' => ['required', 'max:13'],
+            'amount' => ['required', 'integer'],
             'total' => ['integer'],
         ]);
 
@@ -184,35 +191,34 @@ class TransactionController extends Controller
             'total' => $pField['total'],
         ]);
 
-        return redirect()->route('dashboard.main')->with('success','ticket successfully purchased');
+        return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully updated']);
     }
 
     /**
      * Remove the specified resource from storage.
+     * En Garde Steam
+     * R94720
      */
     public function destroy(String $id)
     {
         Transaction::destroy($id);
 
-        return redirect()->back()->with('success','data successfully destroyed');
+        return redirect()->back()->with('success', 'data successfully destroyed');
     }
 
-    
     /**
      * Search for transaction
      */
     public function search(Request $request)
     {
-        // Only activates if it was from an ajax call
-        if($request->ajax())
-        {   
+        if ($request->ajax()) {
             // Select data by ('_column','_criteria','_input') and order them by ('_column','_sort | DESC | ASC')
-            $data = Transaction::where($request->filter,'like','%'.$request->search.'%')->orderBy($request->filter,$request->sort)->get();
+            $data = Transaction::where($request->filter, 'like', '%' . $request->search . '%')->orderBy($request->filter, $request->sort)->get();
             $token = $request->session()->token(); // Get token from request
 
             // Ready output variable for 
             $output = '';
-            if (count($data)>0){
+            if (count($data) > 0) {
                 /* Header */
                 $output = '
                 <table class="table table-striped" id="search_list">
@@ -226,53 +232,55 @@ class TransactionController extends Controller
                             <th scope="col">Total</th>
                             <th scope="col">Confirmed</th>
                             <th scope="col">Bought Date</th>
-                            <th scope="col" style="width: 12ch;">Action</th>
+                            <th scope="col" style="width: 18ch;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                 ';
-                foreach($data as $transaction){
+                foreach ($data as $transaction) {
                     /* Data */
                     $output .=
-                    '
+                        '
                     <tr>
-                        <td scope="row">'. $transaction->id .'</td>
-                        <td>'. $transaction->name .'</td>
-                        <td>'. $transaction->email .'</td>
-                        <td>'. $transaction->no_telp .'</td>
-                        <td>'. $transaction->amount .'</td>
-                        <td>'. $transaction->total .'</td>
+                        <td scope="row">' . $transaction->id . '</td>
+                        <td>' . $transaction->name . '</td>
+                        <td>' . $transaction->email . '</td>
+                        <td>' . $transaction->no_telp . '</td>
+                        <td>' . $transaction->amount . '</td>
+                        <td>' . $transaction->total . '</td>
                         ';
-                        if ($transaction->confirmed) {
-                            $output .='
+                    if ($transaction->confirmed) {
+                        $output .= '
                         <td class="text-success">
                             <i class="fa-regular fa-circle-check" aria-hidden="true"></i>
                             <span class="d-none d-md-inline"> True</span>
                         </td>
                             ';
-                        } else {
-                            $output .='
+                    } else {
+                        $output .= '
                         <td class="text-danger">
                             <i class="fa-regular fa-circle-xmark" aria-hidden="true"></i><span class="d-none d-md-inline">
                                 False</span>
                         </td>
                             ';
-                        }
-                        $output .='
-                        
-                        <td>'. $transaction->created_at .'</td>
+                    }
+                    $output .= '
+                        <td>' . $transaction->created_at . '</td>
                         <td>
-                        <form onsubmit="return confirm("Are you sure you want to delete this data?")" action="'. route('transactions.destroy', ['transaction' => $transaction]) .'" method="POST">
-                        <a href="'. route('transactions.edit', ['transaction' => $transaction]) .'" class="text-decoration-none">
-                        <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
+                            <form onsubmit="return confirm("Are you sure you want to delete this data?")" action="' . route('transactions.destroy', ['transaction' => $transaction]) . '" method="POST">
+                                <a href="' . route('transactions.show', ['transaction' => $transaction]) . '" class="text-decoration-none">
+                                    <button type="button" class="btn btn-info mb-1"><i class="fas fa-eye"></i></button>
                                 </a>
-                                <input type="hidden" name="_token" value="'. $token .'"/>
+                                <a href="' . route('transactions.edit', ['transaction' => $transaction]) . '" class="text-decoration-none">
+                                    <button type="button" class="btn btn-warning mb-1"><i class="fas fa-edit"></i></button>
+                                </a>
+                                <input type="hidden" name="_token" value="' . $token . '"/>
                                 <input type="hidden" name="_method" value="delete">
                                 <button class="btn btn-danger mb-1"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>
-                    '; 
+                    ';
                 }
                 $output .= '
                     </tbody>

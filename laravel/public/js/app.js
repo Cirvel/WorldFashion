@@ -62,6 +62,16 @@ function paymentExpiration($date)
     }, 1000);
 }
 
+// function ticketPricing()
+// {
+//     /**
+//      * Changes the hidden price value for calculateTotal depending on the selected ticket's price
+//      */
+
+//     var ticket = document.getElementById("ticket_id").value;
+//     var price = document.getElementById("price").value;
+// }
+
 function calculateTotal()
 {
     /**

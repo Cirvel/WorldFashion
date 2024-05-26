@@ -29,6 +29,11 @@
                 Users
             </div>
         </a>
+        <a href="{{ route('tickets.index') }}">
+            <div class="container-fluid btn btn-outline-primary mb-2">
+                Tickets
+            </div>
+        </a>
         {{-- <a href="{{ route('events.index') }}">
             <div class="container-fluid btn btn-outline-primary mb-2">
                 Events
