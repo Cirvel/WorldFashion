@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\TicketController;
@@ -24,9 +25,11 @@ Route::get('admin', function () {
     return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
 
-/* Ticket */
+/* Transaction */
+Route::get('payment', [TransactionController::class, 'index'])->name('payment');
 Route::get('booking', [TransactionController::class, 'create'])->name('booking');
-Route::get('rebooking/{id}', [TransactionController::class, 'rebooking'])->name('rebooking');
+Route::get('rebooking/{id}', [TransactionController::class, 'edit'])->name('rebooking');
+Route::get('confirm/{id}', [TransactionController::class, 'confirm'])->name('confirm');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
@@ -35,6 +38,7 @@ Route::get('users.search', [UserController::class, 'search'])->name('users.searc
 // Route::get('events.search', [EventController::class, 'search'])->name('events.search');
 Route::resource('tickets',    TicketController::class);
 Route::get('tickets.search', [TicketController::class, 'search'])->name('tickets.search');
+// Route::resource('orders',    OrderController::class);
 Route::resource('transactions',    TransactionController::class);
 Route::get('transactions.search', [TransactionController::class, 'search'])->name('transactions.search');
 Route::get('transactions.ticket', [TransactionController::class, 'ticket'])->name('transactions.ticket');

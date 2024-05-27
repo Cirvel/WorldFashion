@@ -178,7 +178,7 @@ footer {
 .login-form .form-control {
     margin-bottom: 1rem;
 }
-.login-form .btn-primary {
+.login-form button {
     width: 100%;
     margin-top: 1rem;
 }

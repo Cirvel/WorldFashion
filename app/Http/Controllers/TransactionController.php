@@ -133,35 +133,21 @@ class TransactionController extends Controller
         $transaction = Transaction::findOrFail($id);
         $tickets = Ticket::all();
 
-        return app(AuthController::class)->isLoggedIn() ??
-            view('transactions.edit', [
-                'transaction' => $transaction,
-                'tickets' => $tickets,
-            ]);
-    }
-    /**
-     * Edit transaction lite for user
-     */
-    public function rebooking(String $id)
-    {
-        $transaction = Transaction::findOrFail($id);
-        $tickets = Ticket::all();
-
         /* If basic user is trying to look up another's payment detail, bring them back to dashboard */
         if (auth()->user()->level != "admin" ?? $transaction->user_id != auth()->id()) {
             return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
         }
 
         $id = auth()->id();
-        $transaction = DB::table('transactions')
-            ->where('user_id', '=', $id)
-            ->get()->first();
 
         return app(AuthController::class)->isLoggedIn() ??
             view('booking.rebooking', [
+                'transaction' => $transaction,
                 'tickets' => $tickets,
-                'transaction' => $transaction
             ]);
+    }
+    public function rebooking(String $id)
+    {
     }
 
     /**
@@ -192,6 +178,13 @@ class TransactionController extends Controller
         ]);
 
         return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully updated']);
+    }
+    public function confirm(String $id)
+    {
+        Transaction::findOrFail($id)->update([
+            'confirmed' => true,
+        ]);
+        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully confirmed']);
     }
 
     /**

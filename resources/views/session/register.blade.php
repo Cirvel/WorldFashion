@@ -44,7 +44,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" id="password" maxlength="8" required>
+                            {{-- <input type="password" class="form-control" name="password" id="password" maxlength="8" required> --}}
+                            <input type="password" class="form-control" name="password" id="password" maxlength="8" data-toggle="password" required>
                         </div>
                         <div class="mb-3">
                             <label for="no_telp" class="form-label">No. Telp</label>
@@ -64,6 +65,8 @@
 
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-show-password@1.3.0/dist/bootstrap-show-password.min.js"></script>
     <!-- Bootstrap Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
