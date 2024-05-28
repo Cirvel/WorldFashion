@@ -25,7 +25,7 @@
             <div class="mb-3 d-flex">
                 <h3 class="form-label">EDIT TICKET</h3>
                 <div class="ms-auto">
-                    <a href="{{ route('dashboard.main') }}">
+                    <a href="{{ route('transactions.index') }}">
                         <button type="button" class="btn btn-close"></button>
                     </a>
                 </div>
@@ -82,6 +82,14 @@
                 <label for="total" class="form-label">Total</label>
                 <input type="number" class="form-control" name="total" id="total"
                     value="{{ $transaction->total }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="confirmed" class="form-label">Confirmed</label>
+                <input type="checkbox" class="form-check" name="confirmed" id="confirmed"
+                @if ( $transaction->confirmed )
+                    checked
+                @endif
+                readonly>
             </div>
 
             <div>

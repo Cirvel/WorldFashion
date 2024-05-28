@@ -44,8 +44,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            {{-- <input type="password" class="form-control" name="password" id="password" maxlength="8" required> --}}
-                            <input type="password" class="form-control" name="password" id="password" maxlength="8" data-toggle="password" required>
+                            <input type="password" class="form-control" name="password" id="password" maxlength="8" required>
+                            {{-- <input type="password" class="form-control" name="password" id="password" maxlength="8" data-toggle="password" required> --}}
                         </div>
                         <div class="mb-3">
                             <label for="no_telp" class="form-label">No. Telp</label>

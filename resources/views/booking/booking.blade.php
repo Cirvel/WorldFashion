@@ -19,73 +19,56 @@
     <!-- Body -->
     <div class="mb-3"></div>
     <div class="container-md form-control mx-auto p-2">
-        @if (isset($transaction))
-            <form class="" method="POST" action="{{ route('transactions.update', $transaction->id) }}">
-                @method('put')
-            @else
-                <form class="" method="POST" action="{{ route('transactions.store') }}">
-                    @method('post')
-        @endif
-        @csrf
-        <div class="mb-3 d-flex">
-            <h3 class="form-label">BOOK TICKET</h3>
-            <div class="ms-auto">
-                <a href="{{ route('dashboard.main') }}">
-                    <button type="button" class="btn btn-close"></button>
-                </a>
+        <form class="" method="POST" action="{{ route('transactions.store') }}">
+            @method('post')
+            @csrf
+            <div class="mb-3 d-flex">
+                <h3 class="form-label">BOOK TICKET</h3>
+                <div class="ms-auto">
+                    <a href="{{ route('dashboard.main') }}">
+                        <button type="button" class="btn btn-close"></button>
+                    </a>
+                </div>
             </div>
-        </div>
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="mb-3">
+                <select class="form-select" name="ticket_id" id="ticket_id" onchange="ticket()">
+                    @foreach ($tickets as $ticket)
+                        <option value="{{ $ticket->id }}" title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}
+                        </option>
                     @endforeach
-                </ul>
-            </div>
-        @endif
-        <div class="mb-3">
-            <select class="form-select" name="ticket_id" id="ticket_id" onchange="ticket()">
-                @foreach ($tickets as $ticket)
-                    <option value="{{ $ticket->id }}" title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="mb-3">
-            <input type="hidden" class="form-control" name="price" id="price" value="0"
-                readonly>
-        </div>
-        <div class="mb-3">
-            <input type="hidden" class="form-control" name="user_id" id="user_id" value="{{ auth()->id() }}"
-                readonly>
-        </div>
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{ auth()->user()->name }}"
-                readonly>
-        </div>
-        <div class="mb-3">
-            <label for="no_telp" class="form-label">No. Telp</label>
-            <input type="text" class="form-control" name="no_telp" id="no_telp"
-                value="{{ auth()->user()->no_telp }}" readonly>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" id="email"
-                value="{{ auth()->user()->email }}" readonly>
-        </div>
-        @if (isset($transaction))
-            <div class="mb-3">
-                <label for="amount" class="form-label">Amount</label>
-                <input type="number" class="form-control" name="amount" id="amount"
-                    value="{{ $transaction->amount }}" onchange="calculateTotal()" required>
+                </select>
             </div>
             <div class="mb-3">
-                <label for="total" class="form-label">Total</label>
-                <input type="number" class="form-control" name="total" id="total"
-                    value="{{ $transaction->total }}" readonly>
+                <input type="hidden" class="form-control" name="price" id="price" value="0" readonly>
             </div>
-        @else
+            <div class="mb-3">
+                <input type="hidden" class="form-control" name="user_id" id="user_id" value="{{ auth()->id() }}"
+                    readonly>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" id="name"
+                    value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="no_telp" class="form-label">No. Telp</label>
+                <input type="text" class="form-control" name="no_telp" id="no_telp"
+                    value="{{ auth()->user()->no_telp }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" id="email"
+                    value="{{ auth()->user()->email }}" readonly>
+            </div>
             <div class="mb-3">
                 <label for="amount" class="form-label">Amount</label>
                 <input type="number" class="form-control" name="amount" id="amount" value=""
@@ -95,32 +78,34 @@
                 <label for="total" class="form-label">Total</label>
                 <input type="number" class="form-control" name="total" id="total" value="" readonly>
             </div>
-        @endif
 
-        <div>
-            <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>
-            <button class="btn btn-success d-md-none d-inline" type="submit"><i class="fas fa-check"></i></button>
-            <button class="btn btn-danger d-md-inline d-none" type="reset">Clear</button>
-            <button class="btn btn-danger d-md-none d-inline" type="reset"><i class="fas fa-trash"></i></button>
-        </div>
+            <div>
+                <button class="btn btn-success d-md-inline d-none" type="submit">Submit</button>
+                <button class="btn btn-success d-md-none d-inline" type="submit"><i class="fas fa-check"></i></button>
+                <button class="btn btn-danger d-md-inline d-none" type="reset">Clear</button>
+                <button class="btn btn-danger d-md-none d-inline" type="reset"><i class="fas fa-trash"></i></button>
+            </div>
         </form>
     </div>
     </div>
 </body>
 
 <script src="{{ asset('js/app.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script type="text/javascript">
-    function ticket()
-    {
+    function ticket() {
         var id = $('#ticket_id').val(); // Get selected sort value
         $.ajax({ // Ajax script
             url: "{{ route('transactions.ticket') }}", // Route
             type: "GET", // Method
-            data: {'ticket':id}, // Set parameters
-            success:function(data){ // If process has no error..
+            data: {
+                'ticket': id
+            }, // Set parameters
+            success: function(data) { // If process has no error..
                 $('#price').val(data); // Set hidden value 'price' depending on the ticket price
             }
         })

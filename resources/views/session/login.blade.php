@@ -36,8 +36,8 @@
                         @endif
                         <input type="text"
         name="name" class="form-control mb-3" placeholder="Name">
-    {{-- <input id="password" type="password" name="password" class="form-control" placeholder="Password"> --}}
-    <input id="password" type="password" name="password" class="form-control" placeholder="Password" data-toggle="password">
+    <input id="password" type="password" name="password" class="form-control" placeholder="Password">
+    {{-- <input id="password" type="password" name="password" class="form-control" placeholder="Password" data-toggle="password"> --}}
     <button type="submit" class="btn btn-primary">Login</button>
     <div class="additional-links">
         <p>No account? <a href="{{ route('session.register') }}">Sign in</a></p>

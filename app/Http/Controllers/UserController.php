@@ -37,7 +37,7 @@ class UserController extends Controller
         // Validate data
         $pField = $request->validate([
             'name' => ['required','min:1','max:15'],
-            'password' => ['required','min:1','max:8'],
+            'password' => ['required','min:8','max:20','regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$&%]).*$/'],
             'no_telp' => ['required','min:10','max:13'],
             'email' => ['required','email'],
             'level',

@@ -28,9 +28,25 @@
         </div>
     </div>
     @if (Session::has('success'))
-    <div class="alert alert-success">
-        {{ Session::get('success') }}
+    <div
+        class="alert alert-success alert-dismissible fade show"
+        role="alert">
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+        ></button>
+        <strong>{{Session::get('success')}}</strong>
     </div>
+    
+    <script>
+        var alertList = document.querySelectorAll(".alert");
+        alertList.forEach(function (alert) {
+            new bootstrap.Alert(alert);
+        });
+    </script>
+    
     @endif
     <!-- Options -->
     <div class="container-fluid mt-3">
@@ -43,6 +59,7 @@
             <div class="d-md-flex d-flex flex-grow-1 gap-2">
                 <select class="form-select" name="filter" id="filter" title="Filter">
                     <option value="id">#</option>
+                    <option value="ticket_id">Ticket</option>
                     <option value="name">Name</option>
                     <option value="email">Email</option>
                     <option value="no_telp">No. Telp</option>
@@ -65,20 +82,22 @@
             <thead>
                 <tr>
                     <th scope="col" style="width: 4ch;">#</th>
+                    <th scope="col" style="width: 20ch;">Ticket</th>
                     <th scope="col" style="width: 20ch;">User</th>
                     <th scope="col" style="width: 20ch;">Email</th>
                     <th scope="col">No Telp</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Total</th>
+                    <th scope="col">Jumlah Beli</th>
+                    <th scope="col">Total Harga</th>
                     <th scope="col">Confirmed</th>
                     <th scope="col">Bought Date</th>
-                    <th scope="col" style="width: 18ch;">Action</th>
+                    <th scope="col" style="width: 24ch;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($transactions as $transaction)
                     <tr>
                         <td scope="row">{{ $transaction->id }}</td>
+                        <td>{{ $transaction->fk_ticket_id->name}}</td>
                         <td>{{ $transaction->name }}</td>
                         <td>{{ $transaction->email }}</td>
                         <td>{{ $transaction->no_telp }}</td>
@@ -102,6 +121,17 @@
                             <form onsubmit="return confirm('Are you sure you want to delete this data?')"
                                 action="{{ route('transactions.destroy', ['transaction' => $transaction]) }}"
                                 method="POST">
+                                <a href="{{ route('redeem', [
+                                    'id' => $transaction,
+                                    'code' => $transaction->code,
+                                    'ticket' => $transaction->ticket_id,
+                                    'user' => $transaction->user_id,
+                                    'amount' => $transaction->amount,
+                                    ]) }}"
+                                {{-- <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}" --}}
+                                    class="text-decoration-none">
+                                    <button type="button" class="btn btn-success mb-1"><i class="fas fa-check-circle"></i></button>
+                                </a>
                                 <a href="{{ route('transactions.show', ['transaction' => $transaction]) }}"
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-info mb-1"><i class="fas fa-eye"></i></button>
@@ -147,6 +177,8 @@
             }
         })
     }
+
+    
 </script>
 
 </html>

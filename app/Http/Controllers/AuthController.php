@@ -119,9 +119,9 @@ class AuthController extends Controller
             'name' => ['required','min:1','max:15'],
             'password' => [
                 'required',
-                'min:1',
-                'max:8',
-                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!$#%]).*$/'
+                'min:8',
+                'max:20',
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$&%]).*$/'
             ],
             'no_telp' => ['required','min:10','max:13'],
             'email' => ['required','email'],

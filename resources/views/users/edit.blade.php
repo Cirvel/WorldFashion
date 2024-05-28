@@ -53,6 +53,13 @@
                 required>
             </div>
             <div class="mb-3">
+                <label for="no_telp" class="form-label">No. Telp</label>
+                <input type="email" class="form-control" name="email" id="no_telp" placeholder="XXX-XXXX-XXXX"
+                title="Original value: {{ $user->no_telp }}"
+                value="{{ $user->no_telp }}"
+                required>
+            </div>
+            <div class="mb-3">
                 <select name="level" id="level" class="form-select">
                     <option value="user" selected>User</option>
                     <option value="admin">Admin</option>

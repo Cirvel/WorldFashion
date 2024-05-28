@@ -6,6 +6,7 @@
     color: red;
 }
 
+
 /* Backround Color */
 .primary_color{
     background-color: #124E66;
@@ -16,13 +17,16 @@
 .default_color{
     background-color: #f6f5f3;
 }
-
+.logout_color{
+    background-color: #FFD7D7;
+}
 /* Basics */
 .no_padding_margin{
     padding: 0;
     margin: 0;
 }
 
+/* Sidebar */
 .background_sidebar_color{
     background-color: #124E66;
     color: #ffffff;
@@ -176,7 +180,7 @@ footer {
     text-align: center;
 }
 .login-form .form-control {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 .login-form .btn-primary {
     width: 100%;
@@ -199,16 +203,45 @@ footer {
 @media (max-width: 768px) {
     .overlay_header { font-size: 1.5rem; }
     .overlay_desc { font-size: 1.2rem; }
-    .row {
-        flex-direction: column;
-        border: 1px solid #ddd; /* Add border */
-    }
 
     .news_desc {
         font-size: 0.6rem; /* Smaller text size */
+    }
+    .fs-5 {
+        font-size: 1.125rem;
     }
 }
 @media (max-width: 576px) {
     .overlay_header { font-size: 1rem; }
     .overlay_desc { font-size: 0.8rem;}
+    .countdown_text {font-size: 1.3rem;}
+    .fs-5 {
+        font-size: 1rem;
+    }
+}
+
+.countdown-box {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 0 5px;
+}
+
+/* Transaction History */
+.transaction-card {
+    border-radius: 15px;
+    background-color: #2b2b2b;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+.status-success {
+    color: #28a745;
+}
+.status-expired {
+    color: #dc3545;
+}
+.status-pending{
+    color: blue;
 }

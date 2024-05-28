@@ -18,7 +18,7 @@
 
 <body class="default_color">
     <!-- Sidebar -->
-    <nav class="navbar navbar-dark bg-dark d-flex flex-nowrap">
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu"
                 aria-controls="offcanvasMenu">
@@ -43,18 +43,18 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <b>
-                        <h6><a class="nav-link active" aria-current="page" href="{{ route('dashboard.main') }}">Home</a>
-                        </h6>
+                        <h6><a class="nav-link active" aria-current="page" href="#">Home</a></h6>
                     </b>
                 </li>
                 <li class="nav-item">
                     <b>
-                        <h6><a class="nav-link" href="{{ route('dashboard.former') }}">Former events</a></h6>
+                        <h6><a class="nav-link" href="#">Former events</a></h6>
                     </b>
                 </li>
                 <li class="nav-item">
                     <b>
-                        <h6><a class="nav-link" href="{{ route('payment') }}">Check Payment</a></h6>
+                        <h6><a class="nav-link" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#transactionHistoryModal" href="#">Transaction History</a></h6>
                     </b>
                 </li>
             </ul>
@@ -99,34 +99,103 @@
                     <div class="row">
                         <div class="col-5 mb-3">
                             <div class="sponsor-item bg-light rounded"><img class="img-fluid p-1 rounded"
-                                    src="Img/bg.jpg" alt="Sponsor"></div>
+                                    src="Img/sponsor1.jpeg" alt="Sponsor"></div>
                         </div>
                         <div class="col-5 mb-3">
                             <div class="sponsor-item bg-light rounded"><img class="img-fluid p-1 rounded"
-                                    src="Img/bg.jpg" alt="Sponsor"></div>
+                                    src="Img/sponsor2.jpeg" alt="Sponsor"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-5 mb-3">
                             <div class="sponsor-item bg-light rounded"><img class="img-fluid p-1 rounded"
-                                    src="Img/bg.jpg" alt="Sponsor"></div>
+                                    src="Img/sponsor3.png" alt="Sponsor"></div>
                         </div>
                         <div class="col-5 mb-3">
                             <div class="sponsor-item bg-light rounded"><img class="img-fluid p-1 rounded"
-                                    src="Img/bg.jpg" alt="Sponsor"></div>
+                                    src="Img/sponsor4.png" alt="Sponsor"></div>
                         </div>
                     </div>
                 </div>
             </div>
             <ul class="navbar-nav">
-                <li class="nav-item secondary_color text-center rounded mt-2">
+                <li class="nav-item text-center mt-2">
                     <b>
-                        <h6><a class="nav-link cr" href="#">Logout</a></h6>
+                        <h6><a class="nav-link cr logout_color rounded" href="#">Logout</a></h6>
                     </b>
                 </li>
             </ul>
         </div>
     </div>
+    <!-- Transaction History -->
+    <div class="modal fade" id="transactionHistoryModal" tabindex="-1"
+        aria-labelledby="transactionHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionHistoryModalLabel">Transaction History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Transaction Card Example -->
+                    @foreach ($transactions as $transaction)
+                    <div id="transaction-{{ $transaction->id }}" class="transaction-card" onclick="get({{ $transaction }})" data-bs-toggle="modal" data-bs-target="#historyDetail">
+                        <div class="d-flex justify-content-between">
+                            <span>ID: KDWF-{{ $transaction->code }}</span>
+                        @if ($transaction->confirmed)
+                            <span class="status-success">Success</span>
+                        @else
+                            <span class="status-pending">Pending</span>
+                        @endif
+                        </div>
+                        <div class="mt-2">{{ $transaction->created_at }}</div>
+                        <div class="mt-2">{{ $transaction->amount }} {{ $transaction->fk_ticket_id->name }} Ticket</div>
+                        <div class="mt-2">{{ number_format($transaction->total) }}</div>
+                    </div>
+                    @endforeach
+                    <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal2">
+                        <div class="d-flex justify-content-between">
+                            <span>ID: FF-1714646394-LVR2MDIWZ79H8CR</span>
+                            <span class="status-pending">Pending</span>
+                        </div>
+                        <div class="mt-2">02/05/2024</div>
+                        <div class="mt-2">5 Tiket World Fashion</div>
+                        <div class="mt-2">Rp. 500.000,00</div>
+                    </div>
+                    <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal3">
+                        <div class="d-flex justify-content-between">
+                            <span>ID: FF-1714646294-VNWP79AZYGRESID</span>
+                            <span class="status-expired">Expired</span>
+                        </div>
+                        <div class="mt-2">02/05/2024</div>
+                        <div class="mt-2">1 Tiket World Fashion</div>
+                        <div class="mt-2">Rp. 100.000,00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail -->
+    <div class="modal fade" id="historyDetail" tabindex="-1"
+        aria-labelledby="historyDetailLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionDetailModal1Label">Transaction Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="h-id">Transaction ID: WDP-1715414831-H509BRF0SGF0K0</p>
+                    <p id="h-status">Status: Success</p>
+                    <p id="h-date">Date: 11/05/2024</p>
+                    <p id="h-ticket">Item: 2 Tiket World Fashion</p>
+                    <p id="h-total">Amount: Rp. 200.000,00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Header Video -->
     <div class="container-fluid gx-0">
         <div class="image-container">
@@ -163,6 +232,7 @@
             </div>
         </div>
     </div>
+    <!-- Countdown Event -->
     <div class="container">
         <div class="row text-center">
             <div class="col">
@@ -202,274 +272,433 @@
         <!-- Trigger button for the modal -->
         <div class="row">
             <div class="col d-flex justify-content-center">
-                {{-- <a href="{{ route('booking') }}"> --}}
                 <button type="button" class="btn btn-primary mt-5" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
                     <h1>PRE ORDER NOW</h1>
                 </button>
-                {{-- </a> --}}
             </div>
-
-            <!-- Modal 1 -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Pre Order form</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Horizontal form with input fields -->
-                            @if (auth()->check())
-                            <form id="preOrderForm">
-                                <div class="mb-3 row">
-                                    <label for="inputNama" class="col-sm-2 col-form-label">Nama</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputNama"
-                                            placeholder="Nama" value="{{ auth()->user()->name }}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="inputNoTelepon" class="col-sm-2 col-form-label">No Telepon</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputNoTelepon"
-                                            placeholder="No Telepon">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="inputEmail"
-                                            placeholder="Email">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="inputJumlahTiket" class="col-sm-2 col-form-label">Jumlah Tiket</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="inputJumlahTiket"
-                                            placeholder="Jumlah Tiket">
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-primary w-100" id="submitBtn">Bayar
-                                    Sekarang</button>
-                            </form>
-                            @endif
-                        </div>
+            <p id="p1"></p>
+        </div>
+        <!-- Modal 1 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Pre Order form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
-                </div>
-            </div>
-
-            <!-- Modal 2 -->
-            <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header border-0">
-                            <h5 class="modal-title" id="nextInputModalLabel">Pay Now</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row border ms-1 me-1">
-                                <div class="col text-start">
-                                    <p class="no_padding_margin">Tanggal Pembelian:</p>
-                                    <p class="no_padding_margin">22/05/2024</p>
-                                </div>
-                                <div class="col text-center">
-                                    <p class="no_padding_margin">Kode Pesanan:</p>
-                                    <p class="no_padding_margin">KWDF-123456789109</p>
-                                </div>
-                                <div class="col text-end">
-                                    <p class="no_padding_margin">Status Pesanan:</p>
-                                    <p class="no_padding_margin">Belum Dibayar</p>
+                    <div class="modal-body">
+                        <!-- Horizontal form with input fields -->
+                        <form id="order_form" action="{{ route('transactions.store') }}" method="POST">
+                            @csrf
+                            @method('post')
+                            <div class="mb-3 row">
+                                <label for="ticket_id" class="col-sm-2 col-form-label">Ticket</label>
+                                <div class="col-sm-10">
+                                    <select class="form-select" name="ticket_id" id="ticket_id" onchange="ticket()">
+                                        @foreach ($tickets as $ticket)
+                                            <option value="{{ $ticket->id }}"
+                                                title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-4">
-                                    <div class="row text-center d-flex justify-content-center pt-3 pb-3">
-                                        <div class="col-3 no_padding_margin cr">
-                                            <h3>20</h3>
-                                            <h4>Hrs</h4>
-                                        </div>
-                                        <div class="col-3 no_padding_margin cr">
-                                            <h3>22</h3>
-                                            <h4>Min</h4>
-                                        </div>
-                                        <div class="col-3 no_padding_margin cr">
-                                            <h3>10</h3>
-                                            <h4>Sec</h4>
-                                        </div>
+                            <input type="hidden" class="form-control" name="price" id="price" value="0"
+                                readonly>
+                            <input type="hidden" class="form-control" name="user_id" id="user_id"
+                                value="{{ auth()->id() }}" readonly>
+                            <div class="mb-3 row">
+                                <label for="name" class="col-sm-2 col-form-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" name="name"
+                                        placeholder="Nama" value="{{ auth()->user()->name }}">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="no_telp" class="col-sm-2 col-form-label">No. Telepon</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="no_telp" name="no_telp"
+                                        placeholder="No Telepon" value="{{ auth()->user()->no_telp }}">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        placeholder="Email" value="{{ auth()->user()->email }}">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="amount" class="col-sm-2 col-form-label">Amount</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="amount" name="amount"
+                                        onchange="calculateTotal()">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="total" class="col-sm-2 col-form-label">Total</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="total" name="total"
+                                        readonly>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary w-100" id="submitBtn"
+                                data-bs-toggle="modal" onclick="payNow()">Bayar Sekarang</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal 2 (CAPTCHA) -->
+        <div class="modal fade" id="captchaModal" tabindex="-1" aria-labelledby="captchaModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="captchaModalLabel">CAPTCHA Verification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="captchaForm">
+                            <div class="mb-3">
+                                <label for="captchaInput" class="form-label">Enter the text shown in the image
+                                    below:</label>
+                                <img src="" alt="CAPTCHA Image"
+                                    class="img-fluid mb-3 @error('captcha') is-invalid @enderror ">
+                                <input type="text" class="form-control" id="captchaInput" placeholder="CAPTCHA">
+                            </div>
+                            <button type="button" class="btn btn-primary w-100" id="submitCaptchaBtn"
+                                data-bs-toggle="modal" data-bs-target="#nextInputModal">Submit</button>
+                            @error('captcha')
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @enderror
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal 3 -->
+        <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="nextInputModalLabel">Pay Now</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row ms-1 me-1 d-flex no_padding_margin">
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Tanggal:</p>
+                                </b>
+                                <p class="no_padding_margin">22/05/2024</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Kode:</p>
+                                </b>
+                                <p class="no_padding_margin">KWDF-123456789109</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Status:</p>
+                                </b>
+                                <p class="no_padding_margin">Belum Dibayar</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div
+                                class="col-md-4 text-center d-flex flex-column justify-content-center align-items-center pt-3 pb-3">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">8</h3>
+                                        <h4 class="countdown_text no_padding_margin">Hrs</h4>
                                     </div>
-                                    <div class="row">
-                                        <img src="/Img/logo_tm.png" alt=""> <!-- QR Code Here -->
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">0</h3>
+                                        <h4 class="countdown_text no_padding_margin">Min</h4>
+                                    </div>
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">0</h3>
+                                        <h4 class="countdown_text no_padding_margin">Sec</h4>
                                     </div>
                                 </div>
-                                <div class="col-8 border pe-0">
-                                    <div class="row no_padding_margin">
-                                        <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                            <label for="name">Nama: </label>
-                                            <label for="no.telp">No Telp: </label>
-                                            <label for="email">Email: </label>
-                                            <label for="jumlah_tiket">Jumlah Tiket: </label>
-                                            <label for="total_bayar">Total Bayar: </label>
-                                        </div>
-                                        <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                            <label for="name">Shabrina Zatalini</label>
-                                            <label for="no.telp">085893459719</label>
-                                            <label for="email">bina@gmail.com</label>
-                                            <label for="jumlah_tiket">2</label>
-                                            <label for="total_bayar">Rp. 200.000,00</label>
-                                        </div>
+                                <div class="row mt-3" id="qr">
+                                    <img src="/Img/logo_tm.png" alt="QR Code" class="img-fluid">
+                                    <!-- QR Code Here -->
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-8 pe-0 mt-3">
+                                <div class="row no_padding_margin">
+                                    <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
+                                        <label class="pembelian_text" for="name">Nama: </label>
+                                        <label for="no.telp">No Telp: </label>
+                                        <label for="email">Email: </label>
+                                        <label for="jumlah_tiket">Jumlah Tiket: </label>
+                                        <label for="total_bayar">Total Bayar: </label>
+                                    </div>
+                                    <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
+                                        <label id="name_2">Shabrina Zatalini</label>
+                                        <label id="no_telp_2">085893459719</label>
+                                        <label id="email_2">bina@gmail.com</label>
+                                        <label id="amount_2">2</label>
+                                        <label id="total_2">Rp. 200.000,00</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-primary" id="closeConfirmationBtn">Home</button>
-                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
+                            data-bs-toggle="modal" data-bs-target="#confirmationModal" onclick="store_transactions()">Home</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Modal 3 -->
-            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmationModalLabel">Pre Order Success</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Your pre-order has been submitted successfully!</p>
-                        </div>
-                        </a>
+        <!-- Modal 4 -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Pre Order Success</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your pre-order has been submitted successfully!</p>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-            <script>
-                document.getElementById('submitBtn').addEventListener('click', function() {
-                    // Hide the first modal
-                    var firstModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-                    firstModal.hide();
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
-                    // Show the second modal
-                    var secondModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
-                    secondModal.show();
-                });
-
-                document.getElementById('closeConfirmationBtn').addEventListener('click', function() {
-                    // Hide the second modal
-                    var secondModal = bootstrap.Modal.getInstance(document.getElementById('nextInputModal'));
-                    secondModal.hide();
-
-                    // Show the third modal
-                    var thirdModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-                    thirdModal.show();
-                });
-
-                document.getElementById('reConfirmBtn').addEventListener('click', function() {
-                    // Hide the second modal
-                    var secondModal = bootstrap.Modal.getInstance(document.getElementById('nextInputModal'));
-                    secondModal.hide();
-
-                    // Show the first modal again
-                    var firstModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-                    firstModal.show();
-                });
-            </script>
-
-            <!-- News -->
-            <div class="container mt-5 mb-5">
-                <div class="row align-items-center border-0 border-md">
-                    <div class="col-md-4 mb-3 mb-md-0">
-                        <div class="square-container">
-                            <img src="Img/bg.jpg" alt="Responsive Image" class="img-fluid">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <p class="fs-5 news_desc">Lorem Ipsum is simply dummy text of the printing and typesetting
-                            industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when
-                            an unknown printer took a galley of type and scrambled it to make a type specimen book. It
-                            has survived not only five centuries, but also the leap into electronic typesetting,
-                            remaining essentially unchanged. It was popularised in the 1960s with the release of
-                            Letraset sheets containing Lorem Ipsum </p>
-                    </div>
+    <!-- News -->
+    <div class="container mt-5 mb-5 border border-2 rounded">
+        <div class="row align-items-center border-0 border-md">
+            <div class="col-md-4 p-0">
+                <div class="square-container">
+                    <img src="Img/news.jpeg" alt="Responsive Image" class="img-fluid rounded">
                 </div>
             </div>
+            <div class="col">
+                <p class="fs-5 news_desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a type specimen book. It has survived not
+                    only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+                    It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum </p>
+            </div>
+        </div>
+    </div>
 
-            <!-- Footer -->
-            <footer class="main_color container-fluid">
-                <div class="container">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h2 class="cw pt-1 pb-1">Location</h2>
+    <!-- Footer -->
+    <footer class="main_color container-fluid">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h2 class="cw pt-1 pb-1">Location</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d3613.8073542448806!2d55.1406664!3d25.0745178!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sid!4v1716210390196!5m2!1sen!2sid"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <h3 class="cw pb-2 border-bottom">Help & FAQ</h3>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="cw text-decoration-none">Privacy Policy</a></li>
+                                <li><a href="#" class="cw text-decoration-none">Return And Refund Policy</a>
+                                </li>
+                                <li><a href="#" class="cw text-decoration-none">Customer Service</a></li>
+                                <li><a href="#" class="cw text-decoration-none">Feedback</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <h3 class="cw pb-2 border-bottom">The Company</h3>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="cw text-decoration-none">About</a></li>
+                                <li><a href="#" class="cw text-decoration-none">Careers</a></li>
+                                <li><a href="#" class="cw text-decoration-none">Store Locator</a></li>
+                            </ul>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <div class="map-container">
-                                <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d3613.8073542448806!2d55.1406664!3d25.0745178!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sid!4v1716210390196!5m2!1sen!2sid"
-                                    allowfullscreen="" loading="lazy"
-                                    referrerpolicy="no-referrer-when-downgrade"></iframe>
-                            </div>
+                            <h3 class="cw pb-2 border-bottom mt-3">More</h3>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="cw text-decoration-none">Franchise</a></li>
+                            </ul>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <div class="row">
-                                <div class="col-lg-6 mb-3">
-                                    <h3 class="cw pb-2 border-bottom">Help & FAQ</h3>
-                                    <ul class="list-unstyled">
-                                        <li><a href="#" class="cw">Privacy Policy</a></li>
-                                        <li><a href="#" class="cw">Return And Refund Policy</a></li>
-                                        <li><a href="{{ route('booking') }}" class="cw">Customer Service</a></li>
-                                        <li><a href="{{ route('session.logout') }}" class="cw">Feedback</a></li>
-                                    </ul>
-                                </div>
-                                <div class="col-lg-6 mb-3">
-                                    <h3 class="cw pb-2 border-bottom">The Company</h3>
-                                    <ul class="list-unstyled">
-                                        <li><a href="{{ route('dashboard.admin') }}" class="cw">About</a></li>
-                                        <li><a href="{{ route('transactions.show', 2) }}" class="cw">Careers</a>
-                                        </li>
-                                        <li><a href="#" class="cw">Store Locator</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6 mb-3">
-                                    <h3 class="cw pb-2 border-bottom mt-3">More</h3>
-                                    <ul class="list-unstyled">
-                                        <li><a href="#" class="cw">Franchise</a></li>
-                                    </ul>
-                                </div>
-                                <div class="col-lg-6 mb-3">
-                                    <h3 class="cw pb-2 mt-3">Follow Us</h3>
-                                </div>
+                            <h3 class="cw pb-2 mt-3">Follow Us</h3>
+                            <div class="d-flex gap-2">
+                                <i style="font-size: 1.5rem;" class="fa-brands fa-twitter"></i>
+                                <i style="font-size: 1.5rem;" class="fa-brands fa-instagram"></i>
+                                <i style="font-size: 1.5rem;" class="fa-brands fa-youtube"></i>
+                                <i style="font-size: 1.5rem;" class="fa-brands fa-facebook-f"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="container mt-3">
-                    <div class="row">
-                        <div class="col-12 text-center pt-2 border-top">
-                            <p class="cw">© 2024 World Fashion</p>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-12 text-center pt-2 border-top">
+                    <p class="cw">© 2024 World Fashion</p>
                 </div>
-            </footer>
-            <script src="{{ asset('js/app.js') }}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-            </script>
-            <script type="text/javascript">
-                countdownTimer();
-            </script>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script type="text/javascript">
+        countdownTimer();
+
+        /* Set hidden value 'price' depending on the ticket price */
+        function ticket() {
+            var id = $('#ticket_id').val();
+            $.ajax({ // Ajax script
+                url: "{{ route('transactions.ticket') }}", // Route
+                type: "GET", // Method
+                data: {
+                    'ticket': id
+                }, // Set parameters
+                success: function(data) { // Set price as return value
+                    $('#price').val(data);
+                }
+            })
+        }
+        ticket();
+
+        /* Set transaction detail data from their id */
+        function get(id) {
+            $.ajax({
+                url: "{{ route('transactions.get') }}",
+                type: "GET",
+                data: {
+                    'transaction': id,
+                },
+                success: function(data){
+                    document.getElementById("h-status").innerHTML = "Status:". data.status;
+                    alert('success getting data');
+                },
+                error: function(){
+                    alert('failed getting data');
+                }
+            })
+        }
+
+        /* Change the modal 2 (Pay now) datas upon continuing from modal 1 (Pre order) */
+        function payNow() {
+            $.ajax({ // Ajax script
+                url: "{{ route('transactions.qr') }}", // Route
+                type: "GET", // Method
+                // processData: false,
+                // contentType: false,
+                data: {
+                    'link': 'https://stackoverflow.com/questions/2901102/how-to-format-a-number-with-commas-as-thousands-separators'
+                }, // Parameters
+                success: function(data) { // Set price as return value
+                    document.getElementById('qr').innerHTML = data;
+                },
+                error: function(message, error) {
+                    alert(message.status);
+                }
+            })
+
+            // Get values
+            var name = $('#name').val();
+            var no_telp = $('#no_telp').val();
+            var email = $('#email').val();
+            var amount = $('#amount').val();
+            var total = $('#total').val();
+
+            // Alter text
+            document.getElementById('name_2').innerHTML = name;
+            document.getElementById('no_telp_2').innerHTML = no_telp;
+            document.getElementById('email_2').innerHTML = email;
+            document.getElementById('amount_2').innerHTML = amount;
+            document.getElementById('total_2').innerHTML = total;
+        }
+
+        /* Store data using AJAX */
+        function store_transactions() {
+            $.ajax({ // Ajax script
+                url: "{{ route('transactions.store') }}", // Route
+                type: "POST", // Method
+                data: $('#order_form').serializeArray(), // Parameters
+                // processData: false,
+                // contentType: false,
+                success: function(data) { // Set price as return value
+                    alert('success');
+                },
+                error: function(message, error) {
+                    alert(message.status);
+                }
+            })
+            // alert(JSON.stringify($('#order_form').serializeArray()));
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', function(e) {
+            /* Only continue onto the next popup if all the fiels are filled */
+            const name = document.getElementById('name').value;
+            const no_telp = document.getElementById('no_telp').value;
+            const email = document.getElementById('email').value;
+            const amount = document.getElementById('amount').value;
+
+
+            if (name && no_telp && email && amount) {
+                var firstModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+                firstModal.hide();
+                var secondModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+                secondModal.show();
+            } else {
+                alert('Please fill all the fields');
+            }
+
+        });
+
+        /* Popup continue function */
+        document.addEventListener('hidden.bs.modal', function(event) {
+            if (document.querySelectorAll('.modal.show').length === 0) {
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.parentNode.removeChild(backdrop);
+                }
+                document.body.classList.remove('modal-open');
+                document.body.style.paddingRight = '';
+            }
+        });
+    </script>
 </body>
 
 </html>

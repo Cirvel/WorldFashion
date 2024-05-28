@@ -52,7 +52,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="no_telp" class="form-label">No. Telp</label>
-                    <input type="text" class="form-control" name="no_telp" id="no_telp" placeholder="XXXX-XXXX-XXX" required>
+                    <input type="text" class="form-control" name="no_telp" id="no_telp" placeholder="XXX-XXXX-XXXX" required>
                 </div>
                 <div class="mb-3">
                     <select name="level" id="level" class="form-select">

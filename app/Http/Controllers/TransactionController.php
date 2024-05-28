@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as FacadesQrCode;
+use Intervention\Image\Facades\Image;
 
 class TransactionController extends Controller
 {
@@ -36,6 +37,14 @@ class TransactionController extends Controller
             $link,
         );
         */
+    }
+    public function qr_ajax(Request $request)
+    {
+        
+        if ($request->ajax()) {
+            /* Returns given string into a Qr code */
+            return FacadesQrCode::size(256)->generate($request->link);
+        }
     }
 
     /**
@@ -69,7 +78,7 @@ class TransactionController extends Controller
     {
         if ($request->ajax()) // Check if the request was an ajax
         {
-            $data = Ticket::where('id', '=', $request->ticket)->get()->first();
+            $data = Ticket::findOrFail($request->ticket);
             return $data->price;
         }
     }
@@ -81,24 +90,28 @@ class TransactionController extends Controller
     {
         /* User paying method */
 
-        $pField = $request->validate([
-            'ticket_id' => ['required'],
-            'user_id' => ['required'],
-            'name' => ['required', 'max:35'],
-            'email' => ['required', 'email'],
-            'no_telp' => ['required', 'min:13', 'max:13'],
-            'amount' => ['required', 'integer'],
-            'total' => ['integer'],
-        ]);
+        if ($request->ajax()) {
+            $pField = $request->validate([
+                'ticket_id' => ['required'],
+                'user_id' => ['required'],
+                'name' => ['required', 'max:35'],
+                'email' => ['required', 'email'],
+                'no_telp' => ['required', 'min:13', 'max:13'],
+                'amount' => ['required', 'integer'],
+                'total' => ['integer'],
+                // 'captcha' => ['required', 'captcha'],
+            ]);
 
-        $pField['name'] = strip_tags($pField['name']);
-        $pField['email'] = strip_tags($pField['email']);
-        $pField['no_telp'] = strip_tags($pField['no_telp']);
-        $pField['code'] = Str::random(13);
+            $pField['ticket_id'] = $request->get('ticket_id');
+            $pField['name'] = strip_tags($pField['name']);
+            $pField['email'] = strip_tags($pField['email']);
+            $pField['no_telp'] = strip_tags($pField['no_telp']);
+            $pField['code'] = Str::random(13);
 
-        Transaction::create($pField);
+            Transaction::create($pField);
 
-        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
+            return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
+        }
     }
 
     /**
@@ -126,6 +139,18 @@ class TransactionController extends Controller
     }
 
     /**
+     * Return data through id from ajax request
+     */
+    public function get(Request $request)
+    {
+        if ($request->ajax()) // Check if the request was an ajax
+        {
+            $data = Transaction::findOrFail($request->ticket);
+            return $data;
+        }
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(String $id)
@@ -141,13 +166,25 @@ class TransactionController extends Controller
         $id = auth()->id();
 
         return app(AuthController::class)->isLoggedIn() ??
-            view('booking.rebooking', [
+            view('transactions.edit', [
                 'transaction' => $transaction,
                 'tickets' => $tickets,
             ]);
     }
-    public function rebooking(String $id)
+    public function redeem(String $id, String $user, String $ticket, String $code, String $amount)
     {
+        /**
+         * When user entered a qr code it will automatically confirms the owned transactions
+         */
+        $transaction = DB::table('transactions')->where('code', '=', $code)->get()->first();
+
+        if ($transaction && $transaction->user_id == auth()->id()) {
+            Transaction::findOrFail($transaction->id)->update([
+                'confirmed' => true
+            ]);
+
+            return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully redeemed']);
+        }
     }
 
     /**
@@ -158,6 +195,7 @@ class TransactionController extends Controller
         /* User paying method */
 
         $pField = $request->validate([
+            'ticket_id' => ['required'],
             'name' => ['required', 'max:35'],
             'email' => ['required', 'email'],
             'no_telp' => ['required', 'max:13'],
@@ -165,11 +203,13 @@ class TransactionController extends Controller
             'total' => ['integer'],
         ]);
 
+        $pField['ticket_id'] = $request->get('ticket_id');
         $pField['name'] = strip_tags($pField['name']);
         $pField['email'] = strip_tags($pField['email']);
         $pField['no_telp'] = strip_tags($pField['no_telp']);
 
         Transaction::findOrFail($id)->update([
+            'ticket_id' => $pField['ticket_id'],
             'name' => $pField['name'],
             'email' => $pField['email'],
             'no_telp' => $pField['no_telp'],
@@ -184,7 +224,7 @@ class TransactionController extends Controller
         Transaction::findOrFail($id)->update([
             'confirmed' => true,
         ]);
-        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully confirmed']);
+        return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
     }
 
     /**
@@ -208,8 +248,12 @@ class TransactionController extends Controller
             // Select data by ('_column','_criteria','_input') and order them by ('_column','_sort | DESC | ASC')
             $data = Transaction::where($request->filter, 'like', '%' . $request->search . '%')->orderBy($request->filter, $request->sort)->get();
             $token = $request->session()->token(); // Get token from request
+            if ($request->filter == "ticket_id")
+            { // Search ticket through the foreign key
+                $data = Transaction::whereHas('fk_ticket_id', function($p) use($request) {$p->where('name','like','%'. $request->search .'%');})->get();
+            }
 
-            // Ready output variable for 
+            // Ready output variable for
             $output = '';
             if (count($data) > 0) {
                 /* Header */
@@ -218,6 +262,7 @@ class TransactionController extends Controller
                     <thead>
                         <tr>
                             <th scope="col" style="width: 4ch;">#</th>
+                            <th scope="col" style="width: 20ch;">Ticket</th>
                             <th scope="col" style="width: 20ch;">User</th>
                             <th scope="col" style="width: 20ch;">Email</th>
                             <th scope="col">No Telp</th>
@@ -236,6 +281,7 @@ class TransactionController extends Controller
                         '
                     <tr>
                         <td scope="row">' . $transaction->id . '</td>
+                        <td>' . $transaction->fk_ticket_id->name . '</td>
                         <td>' . $transaction->name . '</td>
                         <td>' . $transaction->email . '</td>
                         <td>' . $transaction->no_telp . '</td>
@@ -287,6 +333,44 @@ class TransactionController extends Controller
             }
 
             return $output;
+        }
+    }
+
+    /**
+     * Append data on transaction history at dashboard
+     */
+    public function append_history(Request $request)
+    {
+        if ($request->ajax())
+        {
+            $data = Transaction::all()->where('user_id','=',$request->user_id);
+
+            $output = '';
+            if (count($data))
+            {
+                foreach($data as $transaction)
+                {
+
+                }
+                $output .='
+                    <div id="transaction-'. $transaction->id .'" class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal1">
+                        <div class="d-flex justify-content-between">
+                            <span>ID: KDWF-{{ $transaction->code }}</span>
+                            @if ($transaction->confirmed)
+                                <span class="status-success">Success</span>
+                            @else
+                                <span class="status-pending">Pending</span>
+                            @endif
+                        </div>
+                        <div class="mt-2">{{ $transaction->created_at }}</div>
+                        <div class="mt-2">{{ $transaction->amount }} {{ $transaction->fk_ticket_id->name }} Ticket</div>
+                        <div class="mt-2">{{ number_format($transaction->total) }}</div>
+                    </div>
+                ';
+            } else
+            {
+
+            }
         }
     }
 }

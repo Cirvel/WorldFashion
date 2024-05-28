@@ -14,11 +14,32 @@
 </head>
 
 <body>
+    {{-- Alert --}}
+    @if ($errors->any())
+        <div
+            class="alert alert-primary alert-dismissible fade show position-fixed fixed-top m-3"
+            role="alert"
+        >
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+            ></button>
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        
+    @endif
+
     <div class="d-flex m-3">
         <h3 class="form-label">EDIT DATABASE</h3>
         <div class="ms-auto">
             <a href="{{ route('dashboard.main') }}">
-                <button type="button" class="btn btn-danger">Return</button>
+                {{-- <button type="button" class="btn btn-danger">Return</button> --}}
             </a>
         </div>
     </div>
