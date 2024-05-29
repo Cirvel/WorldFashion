@@ -113,13 +113,7 @@
                             <form onsubmit="return confirm('Are you sure you want to delete this data?')"
                                 action="{{ route('transactions.destroy', ['transaction' => $transaction]) }}"
                                 method="POST">
-                                <a href="{{ route('redeem', [
-                                    'id' => $transaction,
-                                    'code' => $transaction->code,
-                                    'ticket' => $transaction->ticket_id,
-                                    'user' => $transaction->user_id,
-                                    'amount' => $transaction->amount,
-                                    ]) }}"
+                                <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}"
                                 {{-- <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}" --}}
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-success mb-1"><i class="fas fa-check-circle"></i></button>

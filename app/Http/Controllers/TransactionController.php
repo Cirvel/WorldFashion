@@ -94,8 +94,11 @@ class TransactionController extends Controller
     {
         if ($request->ajax()) // Check if the request was an ajax
         {
-            $data = Transaction::findOrFail($request->ticket);
-            return $data;
+            $data = Transaction::findOrFail($request->id);
+            return [
+                $data, // return transactions row
+                $data->fk_ticket_id // return tickets foreign key row
+            ];
         }
     }
 
@@ -120,11 +123,12 @@ class TransactionController extends Controller
                 'tickets' => $tickets,
             ]);
     }
+
+    /**
+     * When user entered a qr code it will automatically confirms the owned transactions
+     */
     public function redeem(String $id, String $user, String $ticket, String $code, String $amount)
     {
-        /**
-         * When user entered a qr code it will automatically confirms the owned transactions
-         */
         $transaction = DB::table('transactions')->where('code', '=', $code)->get()->first();
 
         if ($transaction && $transaction->user_id == auth()->id()) {
@@ -134,6 +138,13 @@ class TransactionController extends Controller
 
             return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully redeemed']);
         }
+    }
+    public function confirm(String $id)
+    {
+        Transaction::findOrFail($id)->update([
+            'confirmed' => true,
+        ]);
+        return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
     }
 
     /**
@@ -167,13 +178,6 @@ class TransactionController extends Controller
         ]);
 
         return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully updated']);
-    }
-    public function confirm(String $id)
-    {
-        Transaction::findOrFail($id)->update([
-            'confirmed' => true,
-        ]);
-        return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
     }
 
     /**

@@ -189,12 +189,17 @@
                     <h5 class="modal-title" id="transactionDetailModal1Label">Transaction Detail</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p id="h-id">Transaction ID: WDP-1715414831-H509BRF0SGF0K0</p>
-                    <p id="h-status">Status: Success</p>
-                    <p id="h-date">Date: 11/05/2024</p>
-                    <p id="h-ticket">Item: 2 Tiket World Fashion</p>
-                    <p id="h-total">Amount: Rp. 200.000,00</p>
+                <div class="row modal-body">
+                    <div class="col-sm-5">
+                        {!! QrCode::size(192)->generate('https://ngrok.com/') !!}
+                    </div>
+                    <div class="col-sm-6">
+                        <p>Transaction ID: <span id="h-id"></span></p>
+                        <p>Status: <span id="h-status"></span></p>
+                        <p>Date: <span id="h-date"></span></p>
+                        <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
+                        <p>Amount: Rp. <span id="h-total"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -370,7 +375,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="captchaInput" class="form-label">Enter the text shown in the image below:</label>
+                            <label for="captchaInput" class="form-label">Enter the text shown in the image
+                                below:</label>
                             <div id="captcha" class="mb-3 w-100 text-center">
                                 <span></span>
                                 <button type="button" class="btn btn-warning ms-auto" onclick="regenCaptcha()">
@@ -378,8 +384,9 @@
                                 </button>
                             </div>
                             <div id="errorCaptcha" class="mb-3"></div>
-                            <input type="text" name="captcha" id="captchaInput" class="form-control" placeholder="CAPTCHA">
-                        </form>
+                            <input type="text" name="captcha" id="captchaInput" class="form-control"
+                                placeholder="CAPTCHA">
+                            </form>
                         </div>
                         <button type="button" class="btn btn-primary w-100" id="submitCaptchaBtn">Next</button>
                     </div>
@@ -462,8 +469,7 @@
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
-                            data-bs-toggle="modal" data-bs-target=""
-                            onclick="store_transactions()">Submit</button>
+                            data-bs-toggle="modal" data-bs-target="" onclick="store_transactions()">Submit</button>
                     </div>
                 </div>
             </div>
@@ -596,24 +602,6 @@
         }
         ticket();
 
-        /* Set transaction detail data from their id */
-        function get(id) {
-            $.ajax({
-                url: "{{ route('transactions.get') }}",
-                type: "GET",
-                data: {
-                    'transaction': id
-                },
-                success: function(data) {
-                    document.getElementById("h-status").innerHTML = "Status:".data.status;
-                    alert('success getting data');
-                },
-                error: function() {
-                    alert('failed getting data');
-                }
-            })
-        }
-
         /* Change the modal 2 (Pay now) datas upon continuing from modal 1 (Pre order) */
         function payNow() {
             $.ajax({ // Ajax script
@@ -644,7 +632,7 @@
             document.getElementById('no_telp_2').innerHTML = no_telp;
             document.getElementById('email_2').innerHTML = email;
             document.getElementById('amount_2').innerHTML = amount;
-            document.getElementById('total_2').innerHTML = "Rp. "+ new Intl.NumberFormat().format(total);
+            document.getElementById('total_2').innerHTML = "Rp. " + new Intl.NumberFormat().format(total);
         }
 
         /* Store data using AJAX */
@@ -658,7 +646,7 @@
                     alert('success');
                 },
                 error: function(message, error) {
-                    alert("Error code : ". message.status);
+                    alert("Error code : ".message.status);
                 }
             })
         }
@@ -678,10 +666,43 @@
                     $('#captcha span').html(data.captcha);
                 },
                 error: function(message, error) {
-                    alert("Error code : ". message.status);
+                    alert("Error code : ".message.status);
                 }
             })
         };
+
+        /* Replaces data inside transaction detail modal */
+        function get(id) {
+            // alert("Gettind transaction id : " + JSON.stringify(id));
+            $.ajax({
+                url: "{{ route('transactions.get') }}",
+                type: "GET",
+                data: id,
+                success: function(data) {
+                    /**
+                     * data[0] = transactions
+                     * data[1] = tickets
+                     */
+                    var status;
+                    if (data[0].confirmed) {
+                        status = "Success";
+                    } else {
+                        status = "Pending";
+                    }
+
+                    $("#h-status").html(status);
+                    $("#h-id").html(data[0].code);
+                    $("#h-date").html(data[0].created_at);
+                    $("#h-amount").html(data[0].amount);
+                    $("#h-ticket").html(data[1].name);
+                    $("#h-total").html(new Intl.NumberFormat().format(data[0].total));
+                    // alert('success getting data');
+                },
+                error: function(message, error) {
+                    alert("Error code : " + message.status);
+                }
+            })
+        }
 
         $('#submitBtn').click(function(e) {
             /* Only continue onto the next popup if all the fiels are filled */
@@ -711,14 +732,15 @@
                 data: {
                     'captcha': captcha
                 },
-                success: function(data){
-                    var currModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
+                success: function(data) {
+                    var currModal = bootstrap.Modal.getInstance(document.getElementById(
+                        'captchaModal'));
                     currModal.hide();
                     var nextModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
                     nextModal.show();
                     b5_alert("staticAlert", "Captcha passed", "success");
                 },
-                error: function(message, error){
+                error: function(message, error) {
                     regenCaptcha(false);
                     b5_alert("errorCaptcha", "Captcha failed", "danger");
                 }
@@ -736,7 +758,6 @@
                 document.body.style.paddingRight = '';
             }
         });
-
     </script>
 </body>
 

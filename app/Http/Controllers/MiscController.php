@@ -24,12 +24,6 @@ class MiscController extends Controller
     public function generateQr(String $link)
     {
         return QrCode::size(256)->generate($link);
-
-        /*
-        return FacadesQrCode::generate(
-            $link,
-        );
-        */
     }
 
     /**
@@ -55,7 +49,7 @@ class MiscController extends Controller
     }
 
     /**
-     * Throug AJAX, check if captcha is correct before moving the user to the next popup
+     * Through AJAX, check if captcha is correct before moving the user to the next popup
      */
     public function checkCaptcha(Request $request)
     {

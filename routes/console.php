@@ -34,7 +34,7 @@ Artisan::command('dummy_data', function () {
     User::create($userBasic);
 
     // Prepare ticket
-    $dataTicket['name'] = strip_tags("First Class"); // varchar
+    $dataTicket['name'] = strip_tags("World Fashion"); // varchar
     $dataTicket['price'] = 100000; // integer
     $dataTicket['stock'] = 5; // integer
     Ticket::create($dataTicket);
