@@ -39,14 +39,6 @@
         ></button>
         <strong>{{Session::get('success')}}</strong>
     </div>
-    
-    <script>
-        var alertList = document.querySelectorAll(".alert");
-        alertList.forEach(function (alert) {
-            new bootstrap.Alert(alert);
-        });
-    </script>
-    
     @endif
     <!-- Options -->
     <div class="container-fluid mt-3">

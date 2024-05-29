@@ -50,6 +50,18 @@ class TicketController extends Controller
     {
         //
     }
+    
+    /** Through AJAX
+     * Changes the value of hidden price value depending on the ticket selected
+     */
+    public function price(Request $request)
+    {
+        if ($request->ajax()) // Check if the request was an ajax
+        {
+            $data = Ticket::findOrFail($request->ticket);
+            return $data->price;
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.

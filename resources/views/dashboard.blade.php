@@ -13,8 +13,9 @@
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
+
+<div id="staticAlert" class="position-fixed fixed-top m-3"></div>
 
 <body class="default_color">
     <!-- Sidebar -->
@@ -139,19 +140,22 @@
                 <div class="modal-body">
                     <!-- Transaction Card Example -->
                     @foreach ($transactions as $transaction)
-                    <div id="transaction-{{ $transaction->id }}" class="transaction-card" onclick="get({{ $transaction }})" data-bs-toggle="modal" data-bs-target="#historyDetail">
-                        <div class="d-flex justify-content-between">
-                            <span>ID: KDWF-{{ $transaction->code }}</span>
-                        @if ($transaction->confirmed)
-                            <span class="status-success">Success</span>
-                        @else
-                            <span class="status-pending">Pending</span>
-                        @endif
+                        <div id="transaction-{{ $transaction->id }}" class="transaction-card"
+                            onclick="get({{ $transaction }})" data-bs-toggle="modal"
+                            data-bs-target="#historyDetail">
+                            <div class="d-flex justify-content-between">
+                                <span>ID: KDWF-{{ $transaction->code }}</span>
+                                @if ($transaction->confirmed)
+                                    <span class="status-success">Success</span>
+                                @else
+                                    <span class="status-pending">Pending</span>
+                                @endif
+                            </div>
+                            <div class="mt-2">{{ $transaction->created_at }}</div>
+                            <div class="mt-2">{{ $transaction->amount }} {{ $transaction->fk_ticket_id->name }}
+                                Ticket</div>
+                            <div class="mt-2">{{ number_format($transaction->total) }}</div>
                         </div>
-                        <div class="mt-2">{{ $transaction->created_at }}</div>
-                        <div class="mt-2">{{ $transaction->amount }} {{ $transaction->fk_ticket_id->name }} Ticket</div>
-                        <div class="mt-2">{{ number_format($transaction->total) }}</div>
-                    </div>
                     @endforeach
                     <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal2">
                         <div class="d-flex justify-content-between">
@@ -177,8 +181,8 @@
     </div>
 
     <!-- Transaction Detail -->
-    <div class="modal fade" id="historyDetail" tabindex="-1"
-        aria-labelledby="historyDetailLabel" aria-hidden="true">
+    <div class="modal fade" id="historyDetail" tabindex="-1" aria-labelledby="historyDetailLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -335,20 +339,20 @@
                                 <label for="amount" class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-10">
                                     <input type="number" class="form-control" id="amount" name="amount"
-                                        onchange="calculateTotal()">
+                                        min="1" max="10" onchange="calculateTotal()">
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <label for="total" class="col-sm-2 col-form-label">Total</label>
                                 <div class="col-sm-10">
                                     <input type="number" class="form-control" id="total" name="total"
-                                        readonly>
+                                        value="0" readonly>
                                 </div>
                             </div>
+                            <div class="container container-md" id="errorPreOrder">
+                            </div>
                             <button type="button" class="btn btn-primary w-100" id="submitBtn"
-                                data-bs-toggle="modal" onclick="payNow()">Bayar Sekarang</button>
-                        </form>
+                                onclick="payNow()">Next</button>
                     </div>
                 </div>
             </div>
@@ -365,25 +369,19 @@
                             aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="captchaForm">
-                            <div class="mb-3">
-                                <label for="captchaInput" class="form-label">Enter the text shown in the image
-                                    below:</label>
-                                <img src="" alt="CAPTCHA Image"
-                                    class="img-fluid mb-3 @error('captcha') is-invalid @enderror ">
-                                <input type="text" class="form-control" id="captchaInput" placeholder="CAPTCHA">
+                        <div class="mb-3">
+                            <label for="captchaInput" class="form-label">Enter the text shown in the image below:</label>
+                            <div id="captcha" class="mb-3 w-100 text-center">
+                                <span></span>
+                                <button type="button" class="btn btn-warning ms-auto" onclick="regenCaptcha()">
+                                    <i class="fas fa-refresh" aria-hidden="true"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-primary w-100" id="submitCaptchaBtn"
-                                data-bs-toggle="modal" data-bs-target="#nextInputModal">Submit</button>
-                            @error('captcha')
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-
-                                    <strong>{{ $message }}</strong>
-                                </div>
-                            @enderror
+                            <div id="errorCaptcha" class="mb-3"></div>
+                            <input type="text" name="captcha" id="captchaInput" class="form-control" placeholder="CAPTCHA">
                         </form>
+                        </div>
+                        <button type="button" class="btn btn-primary w-100" id="submitCaptchaBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -445,16 +443,16 @@
                             <div class="col-12 col-md-8 pe-0 mt-3">
                                 <div class="row no_padding_margin">
                                     <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label class="pembelian_text" for="name">Nama: </label>
-                                        <label for="no.telp">No Telp: </label>
+                                        <label class="pembelian_text" for="name">Name: </label>
+                                        <label for="no.telp">No. Telp: </label>
                                         <label for="email">Email: </label>
-                                        <label for="jumlah_tiket">Jumlah Tiket: </label>
-                                        <label for="total_bayar">Total Bayar: </label>
+                                        <label for="jumlah_tiket">Ticket: </label>
+                                        <label for="total_bayar">Total: </label>
                                     </div>
                                     <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label id="name_2">Shabrina Zatalini</label>
-                                        <label id="no_telp_2">085893459719</label>
-                                        <label id="email_2">bina@gmail.com</label>
+                                        <label id="name_2">Leon S. Castellanos</label>
+                                        <label id="no_telp_2">821-1080-2307</label>
+                                        <label id="email_2">sebskennedy0917@gmail.com</label>
                                         <label id="amount_2">2</label>
                                         <label id="total_2">Rp. 200.000,00</label>
                                     </div>
@@ -464,7 +462,8 @@
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
-                            data-bs-toggle="modal" data-bs-target="#confirmationModal" onclick="store_transactions()">Home</button>
+                            data-bs-toggle="modal" data-bs-target=""
+                            onclick="store_transactions()">Submit</button>
                     </div>
                 </div>
             </div>
@@ -487,8 +486,6 @@
             </div>
         </div>
     </div>
-
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <!-- News -->
     <div class="container mt-5 mb-5 border border-2 rounded">
@@ -587,7 +584,7 @@
         function ticket() {
             var id = $('#ticket_id').val();
             $.ajax({ // Ajax script
-                url: "{{ route('transactions.ticket') }}", // Route
+                url: "{{ route('tickets.price') }}", // Route
                 type: "GET", // Method
                 data: {
                     'ticket': id
@@ -605,13 +602,13 @@
                 url: "{{ route('transactions.get') }}",
                 type: "GET",
                 data: {
-                    'transaction': id,
+                    'transaction': id
                 },
-                success: function(data){
-                    document.getElementById("h-status").innerHTML = "Status:". data.status;
+                success: function(data) {
+                    document.getElementById("h-status").innerHTML = "Status:".data.status;
                     alert('success getting data');
                 },
-                error: function(){
+                error: function() {
                     alert('failed getting data');
                 }
             })
@@ -620,7 +617,7 @@
         /* Change the modal 2 (Pay now) datas upon continuing from modal 1 (Pre order) */
         function payNow() {
             $.ajax({ // Ajax script
-                url: "{{ route('transactions.qr') }}", // Route
+                url: "{{ route('qr_ajax') }}", // Route
                 type: "GET", // Method
                 // processData: false,
                 // contentType: false,
@@ -647,7 +644,7 @@
             document.getElementById('no_telp_2').innerHTML = no_telp;
             document.getElementById('email_2').innerHTML = email;
             document.getElementById('amount_2').innerHTML = amount;
-            document.getElementById('total_2').innerHTML = total;
+            document.getElementById('total_2').innerHTML = "Rp. "+ new Intl.NumberFormat().format(total);
         }
 
         /* Store data using AJAX */
@@ -656,19 +653,37 @@
                 url: "{{ route('transactions.store') }}", // Route
                 type: "POST", // Method
                 data: $('#order_form').serializeArray(), // Parameters
-                // processData: false,
-                // contentType: false,
                 success: function(data) { // Set price as return value
+                    b5_alert("staticAlert", "<strong>Transaction successfully submit</strong>", "success");
                     alert('success');
                 },
                 error: function(message, error) {
-                    alert(message.status);
+                    alert("Error code : ". message.status);
                 }
             })
-            // alert(JSON.stringify($('#order_form').serializeArray()));
         }
 
-        document.getElementById('submitBtn').addEventListener('click', function(e) {
+        /* Regenerate captcha form */
+        function regenCaptcha(entry = true) {
+            /* Regenerate captcha */
+
+            if (entry) {
+                $('#errorCaptcha').html("");
+            }
+            $.ajax({
+                url: "{{ route('recaptcha') }}",
+                type: "GET",
+                success: function(data) {
+                    $('#captchaInput').val("");
+                    $('#captcha span').html(data.captcha);
+                },
+                error: function(message, error) {
+                    alert("Error code : ". message.status);
+                }
+            })
+        };
+
+        $('#submitBtn').click(function(e) {
             /* Only continue onto the next popup if all the fiels are filled */
             const name = document.getElementById('name').value;
             const no_telp = document.getElementById('no_telp').value;
@@ -680,11 +695,34 @@
                 var firstModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
                 firstModal.hide();
                 var secondModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+                regenCaptcha();
                 secondModal.show();
             } else {
-                alert('Please fill all the fields');
+                b5_alert("errorPreOrder", "Please fill out all the fields", "danger");
+                // alert('Please fill all the fields');
             }
 
+        });
+        $('#submitCaptchaBtn').click(function(e) {
+            var captcha = $('#captchaInput').val();
+            $.ajax({
+                url: "{{ route('nocaptcha') }}",
+                type: "GET",
+                data: {
+                    'captcha': captcha
+                },
+                success: function(data){
+                    var currModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
+                    currModal.hide();
+                    var nextModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
+                    nextModal.show();
+                    b5_alert("staticAlert", "Captcha passed", "success");
+                },
+                error: function(message, error){
+                    regenCaptcha(false);
+                    b5_alert("errorCaptcha", "Captcha failed", "danger");
+                }
+            })
         });
 
         /* Popup continue function */
@@ -698,6 +736,7 @@
                 document.body.style.paddingRight = '';
             }
         });
+
     </script>
 </body>
 

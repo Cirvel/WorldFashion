@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MiscController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -49,11 +50,9 @@ Route::get('admin', function () {
     return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
 
-/* Transaction */
 // Route::get('payment', [TransactionController::class, 'index'])->name('payment');
 // Route::get('booking', [TransactionController::class, 'create'])->name('booking');
 // Route::get('rebooking/{id}', [TransactionController::class, 'edit'])->name('rebooking');
-Route::get('redeem/i{id}u{user}t{ticket}c{code}a{amount}', [TransactionController::class, 'redeem'])->name('redeem');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
@@ -62,15 +61,22 @@ Route::get('users.search', [UserController::class, 'search'])->name('users.searc
 // Route::get('events.search', [EventController::class, 'search'])->name('events.search');
 Route::resource('tickets',    TicketController::class);
 Route::get('tickets.search', [TicketController::class, 'search'])->name('tickets.search');
+Route::get('tickets.price', [TicketController::class, 'price'])->name('tickets.price');
 // Route::resource('orders',    OrderController::class);
+
+/* Transactions */
 Route::resource('transactions',    TransactionController::class);
 Route::get('transactions.search', [TransactionController::class, 'search'])->name('transactions.search');
-
-/* Transactions other */
-Route::get('transactions.ticket', [TransactionController::class, 'ticket'])->name('transactions.ticket');
-Route::get('transactions.qr', [TransactionController::class, 'qr_ajax'])->name('transactions.qr');
 Route::get('transactions.get', [TransactionController::class, 'get'])->name('transactions.get');
+Route::get('redeem/i{id}u{user}t{ticket}c{code}a{amount}', [TransactionController::class, 'redeem'])->name('redeem');
 Route::get('confirm/{id}', [TransactionController::class, 'confirm'])->name('transactions.confirm');
+
+/* Miscellaneous */
+Route::get('qr', [MiscController::class, 'generateQr'])->name('qr');
+Route::get('str', [MiscController::class, 'generateStr'])->name('qr_ajax');
+Route::get('qr_ajax', [MiscController::class, 'qr_ajax'])->name('qr_ajax');
+Route::get('recaptcha', [MiscController::class, 'regenerateCaptcha'])->name('recaptcha');
+Route::get('nocaptcha', [MiscController::class, 'checkCaptcha'])->name('nocaptcha');
 
 /* Session */
 Route::get('/login',    [AuthController::class, 'index'])->name('session.login'); // main page

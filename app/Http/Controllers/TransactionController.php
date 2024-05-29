@@ -7,46 +7,9 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as FacadesQrCode;
-use Intervention\Image\Facades\Image;
 
 class TransactionController extends Controller
 {
-    public function price(int $ticket = 1)
-    {
-        /**
-         * Denotes the price of the entire concert
-         */
-        return 100000;
-    }
-    public function generateStr(int $length = 16)
-    {
-        /**
-         * Generates a random line of string
-         */
-        $str = Str::random($length);
-        return $str;
-    }
-    public function generateQr(String $link)
-    {
-        /* Returns given string into a Qr code */
-        return FacadesQrCode::size(256)->generate($link);
-
-        /*
-        return FacadesQrCode::generate(
-            $link,
-        );
-        */
-    }
-    public function qr_ajax(Request $request)
-    {
-        
-        if ($request->ajax()) {
-            /* Returns given string into a Qr code */
-            return FacadesQrCode::size(256)->generate($request->link);
-        }
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -70,26 +33,12 @@ class TransactionController extends Controller
                 'tickets' => $tickets
             ]);
     }
-
-    /**
-     * Changes the value of hidden price value depending on the ticket selected
-     */
-    public function ticket(Request $request)
-    {
-        if ($request->ajax()) // Check if the request was an ajax
-        {
-            $data = Ticket::findOrFail($request->ticket);
-            return $data->price;
-        }
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         /* User paying method */
-
         if ($request->ajax()) {
             $pField = $request->validate([
                 'ticket_id' => ['required'],
@@ -99,7 +48,7 @@ class TransactionController extends Controller
                 'no_telp' => ['required', 'min:13', 'max:13'],
                 'amount' => ['required', 'integer'],
                 'total' => ['integer'],
-                // 'captcha' => ['required', 'captcha'],
+                'captcha' => ['required'],
             ]);
 
             $pField['ticket_id'] = $request->get('ticket_id');
@@ -129,7 +78,7 @@ class TransactionController extends Controller
             return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
         }
 
-        $qrcode = $this->generateQr('https://t.ly/cL9S4');
+        $qrcode = app(MiscController::class)->generateQr('https://t.ly/cL9S4');
         // $qrcode = $this->generateQr($detail->confirmation_code);
 
         return view('transactions.show', [
