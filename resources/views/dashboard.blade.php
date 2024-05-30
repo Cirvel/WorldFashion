@@ -55,7 +55,7 @@
                 <li class="nav-item">
                     <b>
                         <h6><a class="nav-link" type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#transactionHistoryModal" href="#">Transaction History</a></h6>
+                                data-bs-target="#transactionHistoryModal" onclick="append()">Transaction History</a></h6>
                     </b>
                 </li>
             </ul>
@@ -137,7 +137,7 @@
                     <h5 class="modal-title" id="transactionHistoryModalLabel">Transaction History</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div id="transactions_history" class="modal-body">
                     <!-- Transaction Card Example -->
                     @foreach ($transactions as $transaction)
                         <div id="transaction-{{ $transaction->id }}" class="transaction-card"
@@ -146,9 +146,9 @@
                             <div class="d-flex justify-content-between">
                                 <span>ID: KDWF-{{ $transaction->code }}</span>
                                 @if ($transaction->confirmed)
-                                    <span class="status-success">Success</span>
+                                    <span class="text-success">Success</span>
                                 @else
-                                    <span class="status-pending">Pending</span>
+                                    <span class="text-info">Pending</span>
                                 @endif
                             </div>
                             <div class="mt-2">{{ $transaction->created_at }}</div>
@@ -157,16 +157,7 @@
                             <div class="mt-2">{{ number_format($transaction->total) }}</div>
                         </div>
                     @endforeach
-                    <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal2">
-                        <div class="d-flex justify-content-between">
-                            <span>ID: FF-1714646394-LVR2MDIWZ79H8CR</span>
-                            <span class="status-pending">Pending</span>
-                        </div>
-                        <div class="mt-2">02/05/2024</div>
-                        <div class="mt-2">5 Tiket World Fashion</div>
-                        <div class="mt-2">Rp. 500.000,00</div>
-                    </div>
-                    <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal3">
+                    {{-- <div class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal3">
                         <div class="d-flex justify-content-between">
                             <span>ID: FF-1714646294-VNWP79AZYGRESID</span>
                             <span class="status-expired">Expired</span>
@@ -174,7 +165,7 @@
                         <div class="mt-2">02/05/2024</div>
                         <div class="mt-2">1 Tiket World Fashion</div>
                         <div class="mt-2">Rp. 100.000,00</div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -189,17 +180,16 @@
                     <h5 class="modal-title" id="transactionDetailModal1Label">Transaction Detail</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="row modal-body">
-                    <div class="col-sm-5">
-                        {!! QrCode::size(192)->generate('https://ngrok.com/') !!}
-                    </div>
-                    <div class="col-sm-6">
-                        <p>Transaction ID: <span id="h-id"></span></p>
-                        <p>Status: <span id="h-status"></span></p>
-                        <p>Date: <span id="h-date"></span></p>
-                        <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
-                        <p>Amount: Rp. <span id="h-total"></span></p>
-                    </div>
+                <div class="modal-body">
+                    <input type="text" name="snap" id="snap">
+                    <p>Transaction ID: <span id="h-id"></span></p>
+                    <p>Status: <span id="h-status"></span></p>
+                    <p>Date: <span id="h-date"></span></p>
+                    <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
+                    <p>Amount: Rp. <span id="h-total"></span></p>
+                    <button class="btn btn-primary" id="snap-pay">
+                        Pay <i class="fa fa-qrcode"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -317,6 +307,8 @@
                             </div>
                             <input type="hidden" class="form-control" name="price" id="price" value="0"
                                 readonly>
+                            <input type="hidden" class="form-control" name="ticket_name" id="ticket_name"
+                                value="" readonly>
                             <input type="hidden" class="form-control" name="user_id" id="user_id"
                                 value="{{ auth()->id() }}" readonly>
                             <div class="mb-3 row">
@@ -394,7 +386,7 @@
             </div>
         </div>
 
-        <!-- Modal 3 -->
+        {{-- <!-- Modal 3 OLD -->
         <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -457,11 +449,11 @@
                                         <label for="total_bayar">Total: </label>
                                     </div>
                                     <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label id="name_2">Leon S. Castellanos</label>
-                                        <label id="no_telp_2">821-1080-2307</label>
-                                        <label id="email_2">sebskennedy0917@gmail.com</label>
-                                        <label id="amount_2">2</label>
-                                        <label id="total_2">Rp. 200.000,00</label>
+                                        <label><span id="name_2"></span></label>
+                                        <label><span id="no_telp_2"></span></label>
+                                        <label><span id="email_2"></span></label>
+                                        <label><span id="amount_2"></span> <span id="ticket_2"></span> Ticket</label>
+                                        <label>Rp. <span id="total_2"></span></label>
                                     </div>
                                 </div>
                             </div>
@@ -469,7 +461,86 @@
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
-                            data-bs-toggle="modal" data-bs-target="" onclick="store_transactions()">Submit</button>
+                            data-bs-toggle="modal" data-bs-target="" onclick="store_transactions()">Confirm & Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+
+        <!-- Modal 3 -->
+        <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="nextInputModalLabel">Pay Now</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row ms-1 me-1 d-flex no_padding_margin">
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Tanggal:</p>
+                                </b>
+                                <p class="no_padding_margin">22/05/2024</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Kode:</p>
+                                </b>
+                                <p class="no_padding_margin">KWDF-123456789109</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-start">
+                                <b>
+                                    <p class="no_padding_margin">Status:</p>
+                                </b>
+                                <p class="no_padding_margin">Belum Dibayar</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div
+                                class="col-md-4 text-center d-flex flex-column justify-content-center align-items-center pt-3 pb-3">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">00</h3>
+                                        <h4 class="countdown_text no_padding_margin">Hrs</h4>
+                                    </div>
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">15</h3>
+                                        <h4 class="countdown_text no_padding_margin">Min</h4>
+                                    </div>
+                                    <div class="cr">
+                                        <h3 class="countdown_text no_padding_margin">00</h3>
+                                        <h4 class="countdown_text no_padding_margin">Sec</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-8 pe-0 mt-3">
+                                <div class="row no_padding_margin">
+                                    <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
+                                        <label class="pembelian_text" for="name">Name: </label>
+                                        <label for="no.telp">No. Telp: </label>
+                                        <label for="email">Email: </label>
+                                        <label for="jumlah_tiket">Ticket: </label>
+                                        <label for="total_bayar">Total: </label>
+                                    </div>
+                                    <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
+                                        <label><span id="name_2"></span></label>
+                                        <label><span id="no_telp_2"></span></label>
+                                        <label><span id="email_2"></span></label>
+                                        <label><span id="amount_2"></span> <span id="ticket_2"></span>
+                                            Ticket</label>
+                                        <label>Rp. <span id="total_2"></span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
+                            data-bs-toggle="modal" data-bs-target="" onclick="store_transactions()">Confirm &
+                            Submit</button>
                     </div>
                 </div>
             </div>
@@ -576,189 +647,222 @@
             </div>
         </div>
     </footer>
-
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    <script type="text/javascript">
-        countdownTimer();
-
-        /* Set hidden value 'price' depending on the ticket price */
-        function ticket() {
-            var id = $('#ticket_id').val();
-            $.ajax({ // Ajax script
-                url: "{{ route('tickets.price') }}", // Route
-                type: "GET", // Method
-                data: {
-                    'ticket': id
-                }, // Set parameters
-                success: function(data) { // Set price as return value
-                    $('#price').val(data);
-                }
-            })
-        }
-        ticket();
-
-        /* Change the modal 2 (Pay now) datas upon continuing from modal 1 (Pre order) */
-        function payNow() {
-            $.ajax({ // Ajax script
-                url: "{{ route('qr_ajax') }}", // Route
-                type: "GET", // Method
-                // processData: false,
-                // contentType: false,
-                data: {
-                    'link': 'https://stackoverflow.com/questions/2901102/how-to-format-a-number-with-commas-as-thousands-separators'
-                }, // Parameters
-                success: function(data) { // Set price as return value
-                    document.getElementById('qr').innerHTML = data;
-                },
-                error: function(message, error) {
-                    alert(message.status);
-                }
-            })
-
-            // Get values
-            var name = $('#name').val();
-            var no_telp = $('#no_telp').val();
-            var email = $('#email').val();
-            var amount = $('#amount').val();
-            var total = $('#total').val();
-
-            // Alter text
-            document.getElementById('name_2').innerHTML = name;
-            document.getElementById('no_telp_2').innerHTML = no_telp;
-            document.getElementById('email_2').innerHTML = email;
-            document.getElementById('amount_2').innerHTML = amount;
-            document.getElementById('total_2').innerHTML = "Rp. " + new Intl.NumberFormat().format(total);
-        }
-
-        /* Store data using AJAX */
-        function store_transactions() {
-            $.ajax({ // Ajax script
-                url: "{{ route('transactions.store') }}", // Route
-                type: "POST", // Method
-                data: $('#order_form').serializeArray(), // Parameters
-                success: function(data) { // Set price as return value
-                    b5_alert("staticAlert", "<strong>Transaction successfully submit</strong>", "success");
-                    alert('success');
-                },
-                error: function(message, error) {
-                    alert("Error code : ".message.status);
-                }
-            })
-        }
-
-        /* Regenerate captcha form */
-        function regenCaptcha(entry = true) {
-            /* Regenerate captcha */
-
-            if (entry) {
-                $('#errorCaptcha').html("");
-            }
-            $.ajax({
-                url: "{{ route('recaptcha') }}",
-                type: "GET",
-                success: function(data) {
-                    $('#captchaInput').val("");
-                    $('#captcha span').html(data.captcha);
-                },
-                error: function(message, error) {
-                    alert("Error code : ".message.status);
-                }
-            })
-        };
-
-        /* Replaces data inside transaction detail modal */
-        function get(id) {
-            // alert("Gettind transaction id : " + JSON.stringify(id));
-            $.ajax({
-                url: "{{ route('transactions.get') }}",
-                type: "GET",
-                data: id,
-                success: function(data) {
-                    /**
-                     * data[0] = transactions
-                     * data[1] = tickets
-                     */
-                    var status;
-                    if (data[0].confirmed) {
-                        status = "Success";
-                    } else {
-                        status = "Pending";
-                    }
-
-                    $("#h-status").html(status);
-                    $("#h-id").html(data[0].code);
-                    $("#h-date").html(data[0].created_at);
-                    $("#h-amount").html(data[0].amount);
-                    $("#h-ticket").html(data[1].name);
-                    $("#h-total").html(new Intl.NumberFormat().format(data[0].total));
-                    // alert('success getting data');
-                },
-                error: function(message, error) {
-                    alert("Error code : " + message.status);
-                }
-            })
-        }
-
-        $('#submitBtn').click(function(e) {
-            /* Only continue onto the next popup if all the fiels are filled */
-            const name = document.getElementById('name').value;
-            const no_telp = document.getElementById('no_telp').value;
-            const email = document.getElementById('email').value;
-            const amount = document.getElementById('amount').value;
-
-
-            if (name && no_telp && email && amount) {
-                var firstModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
-                firstModal.hide();
-                var secondModal = new bootstrap.Modal(document.getElementById('captchaModal'));
-                regenCaptcha();
-                secondModal.show();
-            } else {
-                b5_alert("errorPreOrder", "Please fill out all the fields", "danger");
-                // alert('Please fill all the fields');
-            }
-
-        });
-        $('#submitCaptchaBtn').click(function(e) {
-            var captcha = $('#captchaInput').val();
-            $.ajax({
-                url: "{{ route('nocaptcha') }}",
-                type: "GET",
-                data: {
-                    'captcha': captcha
-                },
-                success: function(data) {
-                    var currModal = bootstrap.Modal.getInstance(document.getElementById(
-                        'captchaModal'));
-                    currModal.hide();
-                    var nextModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
-                    nextModal.show();
-                    b5_alert("staticAlert", "Captcha passed", "success");
-                },
-                error: function(message, error) {
-                    regenCaptcha(false);
-                    b5_alert("errorCaptcha", "Captcha failed", "danger");
-                }
-            })
-        });
-
-        /* Popup continue function */
-        document.addEventListener('hidden.bs.modal', function(event) {
-            if (document.querySelectorAll('.modal.show').length === 0) {
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                    backdrop.parentNode.removeChild(backdrop);
-                }
-                document.body.classList.remove('modal-open');
-                document.body.style.paddingRight = '';
-            }
-        });
-    </script>
 </body>
+
+<script src="{{ asset('js/app.js') }}"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+
+<script type="text/javascript">
+    countdownTimer();
+    ticket();
+    append();
+
+    function append() {
+        $.ajax({
+            url: "{{ route('transactions.append') }}",
+            type: "GET",
+            data: {
+                'user_id': {{ auth()->id() }},
+            },
+            success: function(data) {
+                $('#transactions_history').html(data);
+            },
+            error: function(message, error) {
+                b5_alert('staticAlert', 'Failed to load transaction history, please try again : ' + message
+                    .status, 'danger');
+            }
+        })
+    }
+
+    /* Set hidden value 'price' depending on the ticket price */
+    function ticket() {
+        var id = $('#ticket_id').val();
+        $.ajax({ // Ajax script
+            url: "{{ route('tickets.get') }}", // Route
+            type: "GET", // Method
+            data: {
+                'ticket': id
+            }, // Set parameters
+            success: function(data) { // Set price as return value
+                $('#order_form').find('input[name="price"]').val(data.price);
+                $('#order_form').find('input[name="ticket_name"]').val(data.name);
+            }
+        })
+    }
+
+    /* Change the modal 2 (Pay now) datas upon continuing from modal 1 (Pre order) */
+    function payNow() {
+
+        var data = $('#order_form');
+        var username = data.find('input[name="name"]').val()
+        var email = data.find('input[name="email"]').val()
+        var no_telp = data.find('input[name="no_telp"]').val()
+        var ticket = data.find('input[name="ticket_name"]').val()
+        var amount = data.find('input[name="amount"]').val()
+        var total = data.find('input[name="total"]').val()
+
+        // Alter text
+        var preview = $('#nextInputModal');
+        preview.find('span[id="name_2"]').html(username);
+        preview.find('span[id="email_2"]').html(email);
+        preview.find('span[id="no_telp_2"]').html(no_telp);
+        preview.find('span[id="amount_2"]').html(amount);
+        preview.find('span[id="ticket_2"]').html(ticket);
+        preview.find('span[id="total_2"]').html(new Intl.NumberFormat().format(total));
+    }
+
+    /* Store data using AJAX */
+    function store_transactions() {
+        $.ajax({ // Ajax script
+            url: "{{ route('transactions.store') }}", // Route
+            type: "POST", // Method
+            data: $('#order_form').serializeArray(), // Parameters
+            success: function(data) { // Set price as return value
+                b5_alert("staticAlert", "<strong>Transaction successfully submit</strong>", "success");
+                alert('success');
+            },
+            error: function(message, error) {
+                alert("Error code : ".message.status);
+            }
+        })
+    }
+
+    /* Regenerate captcha form */
+    function regenCaptcha(entry = true) {
+        /* Regenerate captcha */
+
+        if (entry) {
+            $('#errorCaptcha').html("");
+        }
+        $.ajax({
+            url: "{{ route('recaptcha') }}",
+            type: "GET",
+            success: function(data) {
+                $('#captchaInput').val("");
+                $('#captcha span').html(data.captcha);
+            },
+            error: function(message, error) {
+                alert("Error code : ".message.status);
+            }
+        })
+    };
+
+    /* Replaces data inside transaction detail modal */
+    function get(id) {
+        // alert("Gettind transaction id : " + JSON.stringify(id));
+        $.ajax({
+            url: "{{ route('transactions.get') }}",
+            type: "GET",
+            data: {
+                'id': id,
+            },
+            success: function(data) {
+                /**
+                 * data[0] = transactions
+                 * data[1] = tickets
+                 */
+                var status;
+                if (data[0].confirmed) {
+                    status = "Success";
+                } else {
+                    status = "Pending";
+                }
+
+                $("#h-status").html(status);
+                $("#snap").val(data[0].snap_token);
+                $("#h-id").html(data[0].id);
+                $("#h-date").html(data[0].created_at);
+                $("#h-amount").html(data[0].amount);
+                $("#h-ticket").html(data[1].name);
+                $("#h-total").html(new Intl.NumberFormat().format(data[0].total));
+                // alert('success getting data');
+            },
+            error: function(message, error) {
+                alert("Error code : " + message.status);
+            }
+        })
+    }
+
+    $('#submitBtn').click(function(e) {
+        /* Only continue onto the next popup if all the fiels are filled */
+        const name = document.getElementById('name').value;
+        const no_telp = document.getElementById('no_telp').value;
+        const email = document.getElementById('email').value;
+        const amount = document.getElementById('amount').value;
+
+
+        if (name && no_telp && email && amount) {
+            var firstModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            firstModal.hide();
+            var secondModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+            regenCaptcha();
+            secondModal.show();
+        } else {
+            b5_alert("errorPreOrder", "Please fill out all the fields", "danger");
+            // alert('Please fill all the fields');
+        }
+
+    });
+    $('#submitCaptchaBtn').click(function(e) {
+        var captcha = $('#captchaInput').val();
+        $.ajax({
+            url: "{{ route('nocaptcha') }}",
+            type: "GET",
+            data: {
+                'captcha': captcha
+            },
+            success: function(data) {
+                var currModal = bootstrap.Modal.getInstance(document.getElementById(
+                    'captchaModal'));
+                currModal.hide();
+                var nextModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
+                nextModal.show();
+                b5_alert("staticAlert", "Captcha passed", "success");
+            },
+            error: function(message, error) {
+                regenCaptcha(false);
+                b5_alert("errorCaptcha", "Captcha failed", "danger");
+            }
+        })
+    });
+    
+    /**
+     * Pay using Midtrans with snap token
+     */
+    $('#snap-pay').click(function(e) {
+        var snap_token = $('#snap').val();
+        // var transaction = $('#h-id').val();
+        snap.pay(snap_token, {
+            onSuccess: function(result) {
+                b5_alert('staticAlert','Payment success!','success');
+                // transaction_confirm(transaction);
+            },
+            onPending: function(result) {
+                b5_alert('staticAlert','Payment pending','info');
+            },
+            onError: function(result) {
+                b5_alert('staticAlert','Payment failed!','danger');
+            }
+        });
+    });
+
+    /* Popup continue function */
+    document.addEventListener('hidden.bs.modal', function(event) {
+        if (document.querySelectorAll('.modal.show').length === 0) {
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.parentNode.removeChild(backdrop);
+            }
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = '';
+        }
+    });
+</script>
 
 </html>

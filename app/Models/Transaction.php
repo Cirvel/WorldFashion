@@ -18,7 +18,7 @@ class Transaction extends Model
         'no_telp',
         'amount',
         'total',
-        'code',
+        'snap_token',
         'confirmed',
     ];
 

@@ -100,13 +100,13 @@
     function ticket() {
         var id = $('#ticket_id').val(); // Get selected sort value
         $.ajax({ // Ajax script
-            url: "{{ route('transactions.ticket') }}", // Route
+            url: "{{ route('tickets.get') }}", // Route
             type: "GET", // Method
             data: {
                 'ticket': id
             }, // Set parameters
             success: function(data) { // If process has no error..
-                $('#price').val(data); // Set hidden value 'price' depending on the ticket price
+                $('#price').val(data.price); // Set hidden value 'price' depending on the ticket price
             }
         })
     };

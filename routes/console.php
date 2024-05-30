@@ -24,7 +24,7 @@ Artisan::command('dummy_data', function () {
     $userAdmin['no_telp'] = "1080-2307-821";
     $userAdmin['level'] = strip_tags("admin");
     User::create($userAdmin);
-    
+
     // Prepare user account
     $userBasic['name'] = strip_tags("4Clients");
     $userBasic['password'] = bcrypt("Never4get2");
@@ -48,7 +48,29 @@ Artisan::command('dummy_data', function () {
     $dataTransaction['confirmed'] = false; // varchar
     $dataTransaction['amount'] = 3; // integer
     $dataTransaction['total'] = 150000; // integer
-    $dataTransaction['code'] = Str::random(13); // integer
+
+    // Set your Merchant Server Key
+    \Midtrans\Config::$serverKey = config('midtrans.serverKey');
+    // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+    \Midtrans\Config::$isProduction = false;
+    // Set sanitization on (default)
+    \Midtrans\Config::$isSanitized = true;
+    // Set 3DS transaction for credit card to true
+    \Midtrans\Config::$is3ds = true;
+
+    /* Midtrans method */
+    $pQris = array(
+        'transaction_details' => array(
+            'order_id' => rand(),
+            'gross_amount' => $dataTransaction['total'],
+        ),
+        'customer_details' => array(
+            'first_name' => $dataTransaction['name'],
+            'email' => $dataTransaction['email'],
+        ),
+    );
+    $snapToken = \Midtrans\Snap::getSnapToken($pQris);
+    $dataTransaction['snap_token'] = $snapToken; // integer
     Transaction::create($dataTransaction);
 
     $this->comment("dummy_data Success");

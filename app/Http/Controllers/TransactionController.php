@@ -6,7 +6,8 @@ use App\Models\Ticket;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class TransactionController extends Controller
 {
@@ -33,6 +34,7 @@ class TransactionController extends Controller
                 'tickets' => $tickets
             ]);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -40,26 +42,52 @@ class TransactionController extends Controller
     {
         /* User paying method */
         if ($request->ajax()) {
-            $pField = $request->validate([
-                'ticket_id' => ['required'],
-                'user_id' => ['required'],
-                'name' => ['required', 'max:35'],
-                'email' => ['required', 'email'],
-                'no_telp' => ['required', 'min:13', 'max:13'],
-                'amount' => ['required', 'integer'],
-                'total' => ['integer'],
-                'captcha' => ['required'],
-            ]);
+        // Set your Merchant Server Key
+        Config::$serverKey = config('midtrans.serverKey');
+        Config::$clientKey = config('midtrans.clientKey');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        Config::$isProduction = false;
+        // Set sanitization on (default)
+        Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        Config::$is3ds = true;
 
-            $pField['ticket_id'] = $request->get('ticket_id');
-            $pField['name'] = strip_tags($pField['name']);
-            $pField['email'] = strip_tags($pField['email']);
-            $pField['no_telp'] = strip_tags($pField['no_telp']);
-            $pField['code'] = Str::random(13);
+        /* Php saving */
+        $pField = $request->validate([
+            'ticket_id' => ['required'],
+            'user_id' => ['required'],
+            'name' => ['required', 'max:35'],
+            'email' => ['required', 'email'],
+            'no_telp' => ['required', 'min:13', 'max:13'],
+            'amount' => ['required', 'integer'],
+            'total' => ['integer'],
+            // 'captcha' => ['required'],
+        ]);
 
-            Transaction::create($pField);
+        $pField['ticket_id'] = $request->get('ticket_id');
+        $pField['name'] = strip_tags($pField['name']);
+        $pField['email'] = strip_tags($pField['email']);
+        $pField['no_telp'] = strip_tags($pField['no_telp']);
+        $pField['snap_token'] = "abcd-efgh-ijkl-mnop-qrst-uvwx-yz";
 
-            return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
+        // /* Midtrans method */
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => rand(),
+                'gross_amount' => $pField['total'],
+            ),
+            'customer_details' => array(
+                'first_name' => $pField['name'],
+                'email' => $pField['email'],
+            ),
+        );
+        $snapToken = Snap::getSnapToken($params); // Get token based on these data
+        $pField['snap_token'] = $snapToken;
+
+
+        Transaction::create($pField);
+
+        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
         }
     }
 
@@ -125,29 +153,6 @@ class TransactionController extends Controller
     }
 
     /**
-     * When user entered a qr code it will automatically confirms the owned transactions
-     */
-    public function redeem(String $id, String $user, String $ticket, String $code, String $amount)
-    {
-        $transaction = DB::table('transactions')->where('code', '=', $code)->get()->first();
-
-        if ($transaction && $transaction->user_id == auth()->id()) {
-            Transaction::findOrFail($transaction->id)->update([
-                'confirmed' => true
-            ]);
-
-            return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully redeemed']);
-        }
-    }
-    public function confirm(String $id)
-    {
-        Transaction::findOrFail($id)->update([
-            'confirmed' => true,
-        ]);
-        return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, String $id)
@@ -201,9 +206,10 @@ class TransactionController extends Controller
             // Select data by ('_column','_criteria','_input') and order them by ('_column','_sort | DESC | ASC')
             $data = Transaction::where($request->filter, 'like', '%' . $request->search . '%')->orderBy($request->filter, $request->sort)->get();
             $token = $request->session()->token(); // Get token from request
-            if ($request->filter == "ticket_id")
-            { // Search ticket through the foreign key
-                $data = Transaction::whereHas('fk_ticket_id', function($p) use($request) {$p->where('name','like','%'. $request->search .'%');})->get();
+            if ($request->filter == "ticket_id") { // Search ticket through the foreign key
+                $data = Transaction::whereHas('fk_ticket_id', function ($p) use ($request) {
+                    $p->where('name', 'like', '%' . $request->search . '%');
+                })->get();
             }
 
             // Ready output variable for
@@ -292,38 +298,76 @@ class TransactionController extends Controller
     /**
      * Append data on transaction history at dashboard
      */
-    public function append_history(Request $request)
+    public function append(Request $request)
     {
-        if ($request->ajax())
-        {
-            $data = Transaction::all()->where('user_id','=',$request->user_id);
+        if ($request->ajax()) {
+            $data = Transaction::all()->where('user_id', '=', $request->user_id)->sortByDesc('created_at');
 
             $output = '';
-            if (count($data))
-            {
-                foreach($data as $transaction)
-                {
-
-                }
-                $output .='
-                    <div id="transaction-'. $transaction->id .'" class="transaction-card" data-bs-toggle="modal" data-bs-target="#transactionDetailModal1">
+            if (count($data) > 0) {
+                foreach ($data as $transaction) {
+                    $output .= '
+                    <div id="transaction-' . $transaction->id . '" class="transaction-card"
+                    onclick="get(' . $transaction->id . ')" data-bs-toggle="modal"
+                    data-bs-target="#historyDetail">
                         <div class="d-flex justify-content-between">
-                            <span>ID: KDWF-{{ $transaction->code }}</span>
-                            @if ($transaction->confirmed)
-                                <span class="status-success">Success</span>
-                            @else
-                                <span class="status-pending">Pending</span>
-                            @endif
-                        </div>
-                        <div class="mt-2">{{ $transaction->created_at }}</div>
-                        <div class="mt-2">{{ $transaction->amount }} {{ $transaction->fk_ticket_id->name }} Ticket</div>
-                        <div class="mt-2">{{ number_format($transaction->total) }}</div>
-                    </div>
+                            <span>ID: KDWF-' . $transaction->snap_token . '</span>';
+                    if ($transaction->confirmed) {
+                        $output .= '<span class="text-success">Success</span>';
+                    } else {
+                        $output .= '<span class="text-info">Pending</span>';
+                    }
+                    $output .= '
+                            </div>
+                            <div class="mt-2">' . $transaction->created_at . '</div>
+                            <div class="mt-2">' . $transaction->amount . ' ' . $transaction->fk_ticket_id->name . ' Ticket</div>
+                            <div class="mt-2">' . number_format($transaction->total) . '</div>
+                            </div>
+                            ';
+                }
+            } else {
+                $output = '
+                <h5 class="text-center mt-5">No data available</h5>    
                 ';
-            } else
-            {
-
             }
+
+            return $output;
+        }
+    }
+
+    /**
+     * Display checkout page for a single transaction
+     */
+    public function checkout(String $id)
+    {
+        if (auth()->check()) {
+            $transaction = Transaction::findOrFail($id);
+
+            return view('checkout', [
+                'transaction' => $transaction,
+            ]);
+        } else {
+            return redirect()->route('session.login')->withErrors('Please log in');
+        }
+    }
+
+    /**
+     * When user entered a qr code it will automatically confirms the owned transactions
+     */
+    public function confirm(Request $request)
+    {
+        if ($request->ajax()) {
+            // Automatically confirms upon triggering
+            $transaction = Transaction::findOrFail($request->id);
+            $transaction->update([
+                'confirmed' => true,
+            ]);
+            // Deduct stock based off the amount of tickets the transaction selected
+            $ticket = Ticket::findOrFail($transaction->ticket_id);
+            $ticket->update([
+                'stock' => $ticket->stock - $transaction->amount,
+            ]);
+            return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
         }
     }
 }

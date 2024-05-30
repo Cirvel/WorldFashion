@@ -113,11 +113,10 @@
                             <form onsubmit="return confirm('Are you sure you want to delete this data?')"
                                 action="{{ route('transactions.destroy', ['transaction' => $transaction]) }}"
                                 method="POST">
-                                <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}"
-                                {{-- <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}" --}}
+                                {{-- <a href="{{ route('transactions.confirm', ['id' => $transaction]) }}"
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-success mb-1"><i class="fas fa-check-circle"></i></button>
-                                </a>
+                                </a> --}}
                                 <a href="{{ route('transactions.show', ['transaction' => $transaction]) }}"
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-info mb-1"><i class="fas fa-eye"></i></button>

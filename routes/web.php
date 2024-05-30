@@ -61,15 +61,16 @@ Route::get('users.search', [UserController::class, 'search'])->name('users.searc
 // Route::get('events.search', [EventController::class, 'search'])->name('events.search');
 Route::resource('tickets',    TicketController::class);
 Route::get('tickets.search', [TicketController::class, 'search'])->name('tickets.search');
-Route::get('tickets.price', [TicketController::class, 'price'])->name('tickets.price');
+Route::get('tickets.get', [TicketController::class, 'get'])->name('tickets.get');
 // Route::resource('orders',    OrderController::class);
 
 /* Transactions */
 Route::resource('transactions',    TransactionController::class);
 Route::get('transactions.search', [TransactionController::class, 'search'])->name('transactions.search');
 Route::get('transactions.get', [TransactionController::class, 'get'])->name('transactions.get');
-Route::get('redeem/i{id}u{user}t{ticket}c{code}a{amount}', [TransactionController::class, 'redeem'])->name('redeem');
-Route::get('confirm/{id}', [TransactionController::class, 'confirm'])->name('transactions.confirm');
+Route::get('transactions.append', [TransactionController::class, 'append'])->name('transactions.append');
+Route::get('checkout/{id}', [TransactionController::class, 'checkout'])->name('transactions.checkout');
+Route::get('confirm', [TransactionController::class, 'confirm'])->name('transactions.confirm');
 
 /* Miscellaneous */
 Route::get('qr', [MiscController::class, 'generateQr'])->name('qr');

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('no_telp');
             $table->integer('amount');
             $table->integer('total');
-            $table->string('code')->unique();
+            $table->string('snap_token')->nullable();
             $table->boolean ('confirmed')->default('0');
             $table->timestamps();
         });
