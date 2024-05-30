@@ -124,7 +124,7 @@ class TicketController extends Controller
                     <thead>
                         <tr>
                         <th scope="col" style="width: 4ch;">#</th>
-                        <th scope="col">Title</th>
+                        <th scope="col">Name</th>
                         <th scope="col" style="width: 20ch;">Price</th>
                         <th scope="col" style="width: 20ch;">Stock</th>
                         <th scope="col" style="width: 15ch;">Action</th>

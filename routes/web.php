@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MiscController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Models\News;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +34,7 @@ Route::get('/', function () {
         'tickets' => $tickets,
     ]);
 })->name('dashboard.main');
+
 Route::get('former_event', function () {
     
     if (app(AuthController::class)->isLoggedIn()){
@@ -44,8 +47,20 @@ Route::get('former_event', function () {
     }
     $username = auth()->user()->name;
 
-    return app(AuthController::class)->isLoggedIn() ?? view('Former_Event', ['username' => $username]);
+    // Search for news if user directs to website through a search bar
+    $news = News::all()->sortByDesc('created_at');
+    if(request()->has('search')){ //  if (/former_event?search=)
+        // $news = DB::table('news')->where('title','like','%'.request()->get('search').'%')->orderBy('created_at','DESC')->get();
+        $news = News::where('title','like','%'.request()->get('search','').'%')->orderBy('created_at','DESC')->get();
+    }
+
+    return app(AuthController::class)->isLoggedIn() ??
+    view('Former_Event', [
+        'news' => $news,
+        'username' => $username,
+    ]);
 })->name('dashboard.former');
+
 Route::get('admin', function () {
     return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
@@ -56,7 +71,11 @@ Route::get('admin', function () {
 
 /* CRUD */
 Route::resource('users',    UserController::class);
+Route::resource('users',    UserController::class);
 Route::get('users.search', [UserController::class, 'search'])->name('users.search');
+Route::resource('news',    NewsController::class);
+Route::resource('news',    NewsController::class);
+Route::get('news.search', [NewsController::class, 'search'])->name('news.search');
 // Route::resource('events',    EventController::class);
 // Route::get('events.search', [EventController::class, 'search'])->name('events.search');
 Route::resource('tickets',    TicketController::class);
@@ -70,7 +89,7 @@ Route::get('transactions.search', [TransactionController::class, 'search'])->nam
 Route::get('transactions.get', [TransactionController::class, 'get'])->name('transactions.get');
 Route::get('transactions.append', [TransactionController::class, 'append'])->name('transactions.append');
 Route::get('checkout/{id}', [TransactionController::class, 'checkout'])->name('transactions.checkout');
-Route::get('confirm', [TransactionController::class, 'confirm'])->name('transactions.confirm');
+Route::post('transactions.confirm', [TransactionController::class, 'confirm'])->name('transactions.confirm');
 
 /* Miscellaneous */
 Route::get('qr', [MiscController::class, 'generateQr'])->name('qr');

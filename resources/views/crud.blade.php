@@ -50,6 +50,11 @@
                 Users
             </div>
         </a>
+        <a href="{{ route('news.index') }}">
+            <div class="container-fluid btn btn-outline-primary mb-2">
+                News
+            </div>
+        </a>
         <a href="{{ route('tickets.index') }}">
             <div class="container-fluid btn btn-outline-primary mb-2">
                 Tickets

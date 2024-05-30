@@ -367,7 +367,8 @@ class TransactionController extends Controller
             $ticket->update([
                 'stock' => $ticket->stock - $transaction->amount,
             ]);
-            return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
+            // return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
+            return $request->session()->token();
         }
     }
 }

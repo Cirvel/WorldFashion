@@ -58,11 +58,10 @@ function paymentExpiration($date) {
     }, 1000);
 }
 
+/**
+ * Used by booking ticket to calculate the total cost of a ticket
+ */
 function calculateTotal() {
-    /**
-     * Used by booking ticket to calculate the total cost of a ticket
-     */
-
     var amount = document.getElementById("amount").value;
     var price = document.getElementById("price").value;
     var total = amount * price;
@@ -72,10 +71,6 @@ function calculateTotal() {
 
 /**
  * Display Bootstrap closable alerts within the web
- * 
- * @param {string} id Picks the CONTAINER for the alerts
- * @param {string} message Message to display
- * @param {string} type Color of the message, use bootstrap colour theme
  */
 function b5_alert(id, message, type) {
     const alertElement = document.getElementById(id)
@@ -89,3 +84,23 @@ function b5_alert(id, message, type) {
 
     alertElement.append(alertElement)
 }
+
+/* Confirm data and deduct ticket stock using AJAX */
+function confirm_transactions() {
+    var form = $('#history_form');
+    var token = form.find('input[name="_token"]');
+
+    alert('transaction_confirm');
+    $.ajax({
+        url: "{{ route('transactions.confirm') }}",
+        type: "POST",
+        data: $('#history_form').serializeArray(),
+        success: function (data) {
+            alert('success : ' + data);
+            token.val(data);
+        },
+        error: function (message, error) {
+            alert('failed : ' + message.status);
+        }
+    })
+};
