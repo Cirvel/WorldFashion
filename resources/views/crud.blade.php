@@ -45,6 +45,13 @@
     </div>
 
     <div class="list m-3">
+
+        {{-- <form action="{{ route('mail') }}" method="GET" class="container container-md">
+            <label for="id" class="form-label">Mail Demo</label>
+            <input class="form-control mb-3" type="number" name="transaction" id="transaction" placeholder="Transaction ID">
+            <button class="btn btn-primary mb-3">Generate</button>
+        </form> --}}
+
         <a href="{{ route('users.index') }}">
             <div class="container-fluid btn btn-outline-primary mb-2">
                 Users
