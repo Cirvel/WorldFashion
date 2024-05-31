@@ -19,7 +19,8 @@ class Transaction extends Model
         'amount',
         'total',
         'snap_token',
-        'confirmed',
+        'order_id',
+        'transaction_status',
     ];
 
     public function fk_user_id()

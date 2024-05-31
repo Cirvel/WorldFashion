@@ -1,13 +1,11 @@
 <script src="{{ asset('js/app.js') }}"></script>
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}">
-</script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script type="text/javascript">
-
     /* Set hidden value 'price' depending on the ticket price */
     function ticket() {
         var id = $('#ticket_id').val();
@@ -81,7 +79,29 @@
         })
     }
 
+    /* Confirm data and deduct ticket stock using AJAX */
+    // function confirm_transactions() {
+    //     // alert('confirming transaction');
+
+    //     var form = $('#history_form');
+    //     var token = form.find('input[name="_token"]');
+
+    //     $.ajax({
+    //         url: "{{ route('transactions.confirm') }}",
+    //         type: "POST",
+    //         data: $('#history_form').serializeArray(),
+    //         success: function(data) {
+    //             alert('success : ' + data);
+    //             token.val(data);
+    //         },
+    //         error: function(message, error) {
+    //             alert('failed : ' + message.status);
+    //         }
+    //     })
+    // };
+
     function append() {
+        $('#transactions_history').html("<p class='fs-3 text-center'><i class='fa fa-spinner'></i><p>");
         $.ajax({
             url: "{{ route('transactions.append') }}",
             type: "GET",
@@ -100,6 +120,7 @@
 
     /* Replaces data inside transaction history detail modal */
     function get(id) {
+        $("#snap-pay").hide();
         // alert("Gettind transaction id : " + JSON.stringify(id));
         $.ajax({
             url: "{{ route('transactions.get') }}",
@@ -113,16 +134,19 @@
                  * data[1] = tickets
                  */
                 var status;
-                if (data[0].confirmed) {
+                if (data[2].status_code == 404) {
+                    status = "Pending";
+                    $("#snap-pay").show();
+                } else if(data[2].status_code == 200) {
                     status = "Success";
                 } else {
-                    status = "Pending";
+                    status = "Expired";
                 }
 
                 $("#h-status").html(status);
-                $("#h-input").val(id);
+                $("#h-input").val(data[0].id);
                 $("#snap").val(data[0].snap_token);
-                $("#h-id").html(data[0].id);
+                $("#h-id").html(data[0].snap_token);
                 $("#h-date").html(data[0].created_at);
                 $("#h-amount").html(data[0].amount);
                 $("#h-ticket").html(data[1].name);
@@ -169,7 +193,7 @@
                 currModal.hide();
                 var nextModal = new bootstrap.Modal(document.getElementById('nextInputModal'));
                 nextModal.show();
-                b5_alert("staticAlert", "Captcha passed", "success");
+                // b5_alert("staticAlert", "Captcha passed", "success");
             },
             error: function(message, error) {
                 regenCaptcha(false);
@@ -184,10 +208,25 @@
     $('#snap-pay').click(function(e) {
         var snap_token = $('#snap').val();
         var transaction = $('#h-id').val();
-        snap.pay(snap_token, {
+        // alert(`variabel ${snap_token}`);
+        snap.pay(`${snap_token}`, {
             onSuccess: function(result) {
+                var form = $('#history_form');
+                var token = form.find('input[name="_token"]');
+
+                $.ajax({
+                    url: "{{ route('transactions.confirm') }}",
+                    type: "POST",
+                    data: $('#history_form').serializeArray(),
+                    success: function(data) {
+                        alert('success : ' + data);
+                        token.val(data);
+                    },
+                    error: function(message, error) {
+                        alert('failed : ' + message.status);
+                    }
+                })
                 b5_alert('staticAlert', 'Payment success!', 'success');
-                confirm_transactions();
             },
             onPending: function(result) {
                 b5_alert('staticAlert', 'Payment pending', 'info');

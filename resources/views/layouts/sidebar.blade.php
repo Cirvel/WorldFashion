@@ -101,7 +101,7 @@
             <ul class="navbar-nav">
                 <li class="nav-item text-center mt-2">
                     <b>
-                        <h6><a class="nav-link cr logout_color rounded" href="#">Logout</a></h6>
+                        <h6><a class="nav-link cr logout_color rounded" href="{{ route('session.logout') }}">Logout</a></h6>
                     </b>
                 </li>
             </ul>

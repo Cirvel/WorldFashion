@@ -84,23 +84,3 @@ function b5_alert(id, message, type) {
 
     alertElement.append(alertElement)
 }
-
-/* Confirm data and deduct ticket stock using AJAX */
-function confirm_transactions() {
-    var form = $('#history_form');
-    var token = form.find('input[name="_token"]');
-
-    alert('transaction_confirm');
-    $.ajax({
-        url: "{{ route('transactions.confirm') }}",
-        type: "POST",
-        data: $('#history_form').serializeArray(),
-        success: function (data) {
-            alert('success : ' + data);
-            token.val(data);
-        },
-        error: function (message, error) {
-            alert('failed : ' + message.status);
-        }
-    })
-};

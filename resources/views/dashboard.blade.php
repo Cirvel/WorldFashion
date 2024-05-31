@@ -120,14 +120,12 @@
             <p id="p1"></p>
         </div>
         <!-- Modal 1 -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Pre Order form</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <!-- Horizontal form with input fields -->
@@ -319,7 +317,7 @@
                             aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row ms-1 me-1 d-flex no_padding_margin">
+                        {{-- <div class="row ms-1 me-1 d-flex no_padding_margin">
                             <div class="col-12 col-md-4 text-start">
                                 <b>
                                     <p class="no_padding_margin">Tanggal:</p>
@@ -338,42 +336,49 @@
                                 </b>
                                 <p class="no_padding_margin">Belum Dibayar</p>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="row">
-                            <div
-                                class="col-md-4 text-center d-flex flex-column justify-content-center align-items-center pt-3 pb-3">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">00</h3>
-                                        <h4 class="countdown_text no_padding_margin">Hrs</h4>
-                                    </div>
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">15</h3>
-                                        <h4 class="countdown_text no_padding_margin">Min</h4>
-                                    </div>
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">00</h3>
-                                        <h4 class="countdown_text no_padding_margin">Sec</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-8 pe-0 mt-3">
+                            <div class="pe-0 mt-3">
                                 <div class="row no_padding_margin">
-                                    <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label class="pembelian_text" for="name">Name: </label>
-                                        <label for="no.telp">No. Telp: </label>
-                                        <label for="email">Email: </label>
-                                        <label for="jumlah_tiket">Ticket: </label>
-                                        <label for="total_bayar">Total: </label>
-                                    </div>
-                                    <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label><span id="name_2"></span></label>
-                                        <label><span id="no_telp_2"></span></label>
-                                        <label><span id="email_2"></span></label>
-                                        <label><span id="amount_2"></span> <span id="ticket_2"></span>
-                                            Ticket</label>
-                                        <label>Rp. <span id="total_2"></span></label>
-                                    </div>
+                                    <table class="table table-borderless">
+                                        <tbody class="fs-5">
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span id="name_2"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>No. Telp</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span id="no_telp_2"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Email</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span id="email_2"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ticket</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span id="amount_2"></span>x <span id="ticket_2"></span> Ticket
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Cost</td>
+                                                <td>:</td>
+                                                <td>
+                                                    Rp. <span id="total_2"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

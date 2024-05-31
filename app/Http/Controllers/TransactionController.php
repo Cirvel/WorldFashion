@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\Transaction;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -42,52 +44,53 @@ class TransactionController extends Controller
     {
         /* User paying method */
         if ($request->ajax()) {
-        // Set your Merchant Server Key
-        Config::$serverKey = config('midtrans.serverKey');
-        Config::$clientKey = config('midtrans.clientKey');
-        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        Config::$isProduction = false;
-        // Set sanitization on (default)
-        Config::$isSanitized = true;
-        // Set 3DS transaction for credit card to true
-        Config::$is3ds = true;
+            // Set your Merchant Server Key
+            Config::$serverKey = config('midtrans.serverKey');
+            Config::$clientKey = config('midtrans.clientKey');
+            // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+            Config::$isProduction = false;
+            // Set sanitization on (default)
+            Config::$isSanitized = true;
+            // Set 3DS transaction for credit card to true
+            Config::$is3ds = true;
 
-        /* Php saving */
-        $pField = $request->validate([
-            'ticket_id' => ['required'],
-            'user_id' => ['required'],
-            'name' => ['required', 'max:35'],
-            'email' => ['required', 'email'],
-            'no_telp' => ['required', 'min:13', 'max:13'],
-            'amount' => ['required', 'integer'],
-            'total' => ['integer'],
-            // 'captcha' => ['required'],
-        ]);
+            /* Php saving */
+            $pField = $request->validate([
+                'ticket_id' => ['required'],
+                'user_id' => ['required'],
+                'name' => ['required', 'max:35'],
+                'email' => ['required', 'email'],
+                'no_telp' => ['required', 'min:13', 'max:13'],
+                'amount' => ['required', 'integer'],
+                'total' => ['integer'],
+                // 'captcha' => ['required'],
+            ]);
 
-        $pField['ticket_id'] = $request->get('ticket_id');
-        $pField['name'] = strip_tags($pField['name']);
-        $pField['email'] = strip_tags($pField['email']);
-        $pField['no_telp'] = strip_tags($pField['no_telp']);
-        $pField['snap_token'] = "abcd-efgh-ijkl-mnop-qrst-uvwx-yz";
+            $pField['order_id'] = rand();
+            $pField['ticket_id'] = $request->get('ticket_id');
+            $pField['name'] = strip_tags($pField['name']);
+            $pField['email'] = strip_tags($pField['email']);
+            $pField['no_telp'] = strip_tags($pField['no_telp']);
+            $pField['snap_token'] = "abcd-efgh-ijkl-mnop-qrst-uvwx-yz";
 
-        // /* Midtrans method */
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => rand(),
-                'gross_amount' => $pField['total'],
-            ),
-            'customer_details' => array(
-                'first_name' => $pField['name'],
-                'email' => $pField['email'],
-            ),
-        );
-        $snapToken = Snap::getSnapToken($params); // Get token based on these data
-        $pField['snap_token'] = $snapToken;
+            // /* Midtrans method */
+            $params = array(
+                'transaction_details' => array(
+                    'order_id' => $pField['order_id'],
+                    'gross_amount' => $pField['total'],
+                ),
+                'customer_details' => array(
+                    'first_name' => $pField['name'],
+                    'email' => $pField['email'],
+                ),
+            );
+            $snapToken = Snap::getSnapToken($params); // Get token based on these data
+            $pField['snap_token'] = $snapToken;
 
 
-        Transaction::create($pField);
+            Transaction::create($pField);
 
-        return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
+            return redirect()->route('dashboard.main')->with(['success' => 'Transaction successfully stored']);
         }
     }
 
@@ -123,9 +126,21 @@ class TransactionController extends Controller
         if ($request->ajax()) // Check if the request was an ajax
         {
             $data = Transaction::findOrFail($request->id);
+
+            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
+
+            $order = $data->order_id;
+            /* Getting midtrans order data */
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic ' . $midtrans_serverkey,
+            ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
+            $response = json_decode($response->body());
+
             return [
                 $data, // return transactions row
-                $data->fk_ticket_id // return tickets foreign key row
+                $data->fk_ticket_id, // return tickets foreign key row
+                $response
             ];
         }
     }
@@ -227,7 +242,7 @@ class TransactionController extends Controller
                             <th scope="col">No Telp</th>
                             <th scope="col">Amount</th>
                             <th scope="col">Total</th>
-                            <th scope="col">Confirmed</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Bought Date</th>
                             <th scope="col" style="width: 18ch;">Action</th>
                         </tr>
@@ -247,18 +262,25 @@ class TransactionController extends Controller
                         <td>' . $transaction->amount . '</td>
                         <td>' . $transaction->total . '</td>
                         ';
-                    if ($transaction->confirmed) {
+                    if ($transaction->transaction_status == "success") {
                         $output .= '
                         <td class="text-success">
                             <i class="fa-regular fa-circle-check" aria-hidden="true"></i>
-                            <span class="d-none d-md-inline"> True</span>
+                            <span class="d-none d-md-inline"> Success</span>
+                        </td>
+                            ';
+                    } elseif ($transaction->transaction_status == "pending") {
+                        $output .= '
+                        <td class="text-info">
+                            <i class="fa-regular fa-circle-question" aria-hidden="true"></i><span class="d-none d-md-inline">
+                                Pending</span>
                         </td>
                             ';
                     } else {
                         $output .= '
                         <td class="text-danger">
                             <i class="fa-regular fa-circle-xmark" aria-hidden="true"></i><span class="d-none d-md-inline">
-                                False</span>
+                                Expired</span>
                         </td>
                             ';
                     }
@@ -301,21 +323,34 @@ class TransactionController extends Controller
     public function append(Request $request)
     {
         if ($request->ajax()) {
+            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
+
             $data = Transaction::all()->where('user_id', '=', $request->user_id)->sortByDesc('created_at');
 
             $output = '';
             if (count($data) > 0) {
                 foreach ($data as $transaction) {
+                    $order = $transaction->order_id;
+                    /* Getting midtrans order data */
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Basic ' . $midtrans_serverkey,
+                    ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
+
+                    $response = json_decode($response->body());
+
                     $output .= '
                     <div id="transaction-' . $transaction->id . '" class="transaction-card"
                     onclick="get(' . $transaction->id . ')" data-bs-toggle="modal"
                     data-bs-target="#historyDetail">
                         <div class="d-flex justify-content-between">
                             <span>ID: KDWF-' . $transaction->snap_token . '</span>';
-                    if ($transaction->confirmed) {
+                    if ($response->status_code == 404) {
+                        $output .= '<span class="text-info">Pending</span>';
+                    } elseif ($response->status_code == 200) {
                         $output .= '<span class="text-success">Success</span>';
                     } else {
-                        $output .= '<span class="text-info">Pending</span>';
+                        $output .= '<span class="text-danger">Expired</span>';
                     }
                     $output .= '
                             </div>
@@ -360,7 +395,7 @@ class TransactionController extends Controller
             // Automatically confirms upon triggering
             $transaction = Transaction::findOrFail($request->id);
             $transaction->update([
-                'confirmed' => true,
+                'transaction_status' => true,
             ]);
             // Deduct stock based off the amount of tickets the transaction selected
             $ticket = Ticket::findOrFail($transaction->ticket_id);

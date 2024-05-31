@@ -23,7 +23,7 @@
                         <input type="hidden" name="id" id="h-input" value="1">
                     </form>
                     <input type="hidden" name="snap" id="snap">
-                    <p>Transaction ID: <span id="h-id"></span></p>
+                    <p>Transaction ID: KDWF-<span id="h-id"></span></p>
                     <p>Status: <span id="h-status"></span></p>
                     <p>Date: <span id="h-date"></span></p>
                     <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>

@@ -21,8 +21,9 @@ return new class extends Migration
             $table->string('no_telp');
             $table->integer('amount');
             $table->integer('total');
-            $table->string('snap_token')->nullable();
-            $table->boolean ('confirmed')->default('0');
+            $table->string('order_id');
+            $table->string('snap_token');
+            $table->enum('transaction_status', ['success', 'pending', 'expired'])->default('pending');
             $table->timestamps();
         });
     }
