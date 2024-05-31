@@ -70,8 +70,8 @@
             type: "POST", // Method
             data: $('#order_form').serializeArray(), // Parameters
             success: function(data) { // Set price as return value
-                b5_alert("staticAlert", "<strong>Transaction successfully submit</strong>", "success");
-                alert('success');
+                b5_alert("staticAlert", "<strong>Transaction has been successfully submitted, please go to the transaction history to confirm your payment.</strong>", "success");
+                // alert('success');
             },
             error: function(message, error) {
                 alert("Error code : " + message.status);
@@ -219,7 +219,7 @@
                     type: "POST",
                     data: $('#history_form').serializeArray(),
                     success: function(data) {
-                        alert('success : ' + data);
+                        // alert('success : ' + data);
                         token.val(data);
                     },
                     error: function(message, error) {
