@@ -65,6 +65,10 @@ Route::get('admin', function () {
     return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
 
+Route::get('mail', function () {
+    return view('mail');
+})->name('mail');
+
 // Route::get('payment', [TransactionController::class, 'index'])->name('payment');
 // Route::get('booking', [TransactionController::class, 'create'])->name('booking');
 // Route::get('rebooking/{id}', [TransactionController::class, 'edit'])->name('rebooking');

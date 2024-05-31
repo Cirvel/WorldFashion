@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Mews\Captcha\Facades\Captcha;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MiscController extends Controller

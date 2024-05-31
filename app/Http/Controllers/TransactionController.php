@@ -345,7 +345,7 @@ class TransactionController extends Controller
                     data-bs-target="#historyDetail">
                         <div class="d-flex justify-content-between">
                             <span>ID: KDWF-' . $transaction->snap_token . '</span>';
-                    if ($response->status_code == 404) {
+                    if ($response->status_code == 404 ?? $response->status_code = 201) {
                         $output .= '<span class="text-info">Pending</span>';
                     } elseif ($response->status_code == 200) {
                         $output .= '<span class="text-success">Success</span>';
@@ -395,13 +395,15 @@ class TransactionController extends Controller
             // Automatically confirms upon triggering
             $transaction = Transaction::findOrFail($request->id);
             $transaction->update([
-                'transaction_status' => true,
+                'transaction_status' => 'success',
             ]);
+
             // Deduct stock based off the amount of tickets the transaction selected
             $ticket = Ticket::findOrFail($transaction->ticket_id);
             $ticket->update([
                 'stock' => $ticket->stock - $transaction->amount,
             ]);
+
             // return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
             return $request->session()->token();
         }
