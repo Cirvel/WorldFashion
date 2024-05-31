@@ -29,14 +29,14 @@
                 </a> --}}
             </div>
             <div class="ms-auto">
-                @if (auth()->user()->level == "admin")
-                <a href="{{ route('transactions.index') }}">
-                    <button class="btn btn-close"></button>
-                </a>
+                @if (auth()->user()->level == 'admin')
+                    <a href="{{ route('transactions.index') }}">
+                        <button class="btn btn-close"></button>
+                    </a>
                 @else
-                <a href="{{ route('dashboard.main') }}">
-                    <button class="btn btn-close"></button>
-                </a>
+                    <a href="{{ route('dashboard.main') }}">
+                        <button class="btn btn-close"></button>
+                    </a>
                 @endif
             </div>
         </div>
@@ -46,12 +46,18 @@
                     <tbody>
                         <tr>
                             <td>
-                                {{ $qr_code }}
+                                @if ($transaction->transaction_status == 'success')
+                                    <i class="text-success fa-solid fa-circle-check fa-10x"></i>
+                                @elseif ($transaction->transaction_status == 'pending')
+                                    <i class="text-info fa-solid fa-circle-question fa-10x"></i>
+                                @else
+                                    <i class="text-danger fa-solid fa-circle-xmark fa-10x"></i>
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <b>KDWF-{{ $transaction->code }}</b>
+                                <b>KDWF-{{ $transaction->snap_token }}</b>
                             </td>
                         </tr>
                     </tbody>
@@ -88,9 +94,15 @@
                         <tr>
                             <td>Confirmed</td>
                             <td>:</td>
-                            @if ($transaction->confirmed)
+                            @if ($transaction->transaction_status == 'success')
                                 <td class="text-success">
                                     <i class="fa-regular fa-circle-check" aria-hidden="true"></i><span
+                                        class="d-none d-md-inline">
+                                        True</span>
+                                </td>
+                            @elseif ($transaction->transaction_status == 'pending')
+                                <td class="text-info">
+                                    <i class="fa-regular fa-circle-question" aria-hidden="true"></i><span
                                         class="d-none d-md-inline">
                                         True</span>
                                 </td>

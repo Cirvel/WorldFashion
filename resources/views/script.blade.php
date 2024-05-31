@@ -220,6 +220,7 @@
                     data: $('#history_form').serializeArray(),
                     success: function(data) {
                         // alert('success : ' + data);
+                        $("#snap-pay").hide();
                         token.val(data);
                     },
                     error: function(message, error) {

@@ -1,15 +1,18 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\MiscController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Mail\SendLinkMail;
 use App\Models\News;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /* Dashboard */
@@ -65,13 +68,12 @@ Route::get('admin', function () {
     return app(AuthController::class)->isAdmin() ?? view('crud');
 })->name('dashboard.admin');
 
-Route::get('mail', function () {
-    return view('mail');
-})->name('mail');
-
 // Route::get('payment', [TransactionController::class, 'index'])->name('payment');
 // Route::get('booking', [TransactionController::class, 'create'])->name('booking');
 // Route::get('rebooking/{id}', [TransactionController::class, 'edit'])->name('rebooking');
+
+/* Mail */
+Route::get('mail', [MailController::class, 'mail'])->name('mail');
 
 /* CRUD */
 Route::resource('users',    UserController::class);
@@ -92,8 +94,8 @@ Route::resource('transactions',    TransactionController::class);
 Route::get('transactions.search', [TransactionController::class, 'search'])->name('transactions.search');
 Route::get('transactions.get', [TransactionController::class, 'get'])->name('transactions.get');
 Route::get('transactions.append', [TransactionController::class, 'append'])->name('transactions.append');
-Route::get('checkout/{id}', [TransactionController::class, 'checkout'])->name('transactions.checkout');
 Route::post('transactions.confirm', [TransactionController::class, 'confirm'])->name('transactions.confirm');
+Route::get('checkout/{order_id}KDWF{snap_token}', [TransactionController::class, 'checkout'])->name('transactions.checkout');
 
 /* Miscellaneous */
 Route::get('qr', [MiscController::class, 'generateQr'])->name('qr');

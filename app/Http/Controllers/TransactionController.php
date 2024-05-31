@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendLinkMail;
 use App\Models\Ticket;
 use App\Models\Transaction;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -109,7 +110,12 @@ class TransactionController extends Controller
             return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
         }
 
-        $qrcode = app(MiscController::class)->generateQr('https://t.ly/cL9S4');
+        $link = route('transactions.checkout', [
+            'order_id' => $transaction->order_id,
+            'snap_token' => $transaction->snap_token,
+        ]);
+
+        $qrcode = app(MiscController::class)->generateQr($link);
         // $qrcode = $this->generateQr($detail->confirmation_code);
 
         return view('transactions.show', [
@@ -373,13 +379,28 @@ class TransactionController extends Controller
     /**
      * Display checkout page for a single transaction
      */
-    public function checkout(String $id)
+    public function checkout(String $order, String $snap)
     {
         if (auth()->check()) {
-            $transaction = Transaction::findOrFail($id);
+            $transaction = DB::table('transactions')->where('order_id', '=', $order)->where('snap_token', '=', $snap)->first();
 
-            return view('checkout', [
+            if (!$transaction) {
+                return redirect()->route('dashboard.admin')->withErrors('Transaction not found');
+            }
+
+            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
+
+            $order = $transaction->order_id;
+            /* Getting midtrans order data */
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic ' . $midtrans_serverkey,
+            ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
+            $response = json_decode($response->body());
+
+            return view('transactions.show', [
                 'transaction' => $transaction,
+                'response' => $response,
             ]);
         } else {
             return redirect()->route('session.login')->withErrors('Please log in');
@@ -403,6 +424,15 @@ class TransactionController extends Controller
             $ticket->update([
                 'stock' => $ticket->stock - $transaction->amount,
             ]);
+
+            // Send email to user
+            $email = $transaction->email;
+            $name = $transaction->name;
+            $link = route('transactions.checkout', [
+                'order_id' => $transaction->order_id,
+                'snap_token' => $transaction->snap_token,
+            ]);
+            $mail = Mail::to($email, $name)->send(new SendLinkMail($link, $transaction));
 
             // return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
             return $request->session()->token();
