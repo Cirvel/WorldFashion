@@ -99,7 +99,8 @@
     //         }
     //     })
     // };
-
+    
+    /* Display rows in transaction history */
     function append() {
         $('#transactions_history').html("<p class='fs-3 text-center'><i class='fa fa-spinner'></i><p>");
         $.ajax({
@@ -120,6 +121,7 @@
 
     /* Replaces data inside transaction history detail modal */
     function get(id) {
+        $("#snap-throbber").show();
         $("#snap-pay").hide();
         // alert("Gettind transaction id : " + JSON.stringify(id));
         $.ajax({
@@ -132,15 +134,19 @@
                 /**
                  * data[0] = transactions
                  * data[1] = tickets
+                 * data[2] = midtrans order
                  */
                 var status;
-                if (data[2].status_code == 404) {
+                $("#snap-throbber").hide();
+                if (data[2].status_code == 200) {
+                    status = "Success";
+                } else if(data[2].status_code == 201 || data[2].status_code == 404) {
                     status = "Pending";
                     $("#snap-pay").show();
-                } else if(data[2].status_code == 200) {
-                    status = "Success";
-                } else {
+                } else if(data[2].status_code == 407) {
                     status = "Expired";
+                } else {
+                    status = "Undefined";
                 }
 
                 $("#h-status").html(status);
@@ -220,7 +226,7 @@
                     data: $('#history_form').serializeArray(),
                     success: function(data) {
                         // alert('success : ' + data);
-                        $("#snap-pay").hide();
+                        $("#snap-pay").hide();  
                         token.val(data);
                     },
                     error: function(message, error) {

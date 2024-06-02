@@ -3,11 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MiscController extends Controller
 {
+    public function getMidtrans(String $id)
+    { /* Get midtrans transaction data through order_id */
+        $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Basic ' . $midtrans_serverkey,
+        ])->get('https://api.sandbox.midtrans.com/v2/' . $id . '/status');
+
+        $response = json_decode($response->body());
+
+        return $response;
+    }
     /**
      * Generates a random line of strings
      */

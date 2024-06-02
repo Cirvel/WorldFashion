@@ -105,6 +105,9 @@ class TransactionController extends Controller
          */
         $transaction = Transaction::findOrFail($id);
 
+        // $response = (new MiscController)->getMidtrans($transaction->order_id);
+        // dd($response);
+
         /* If basic user is trying to look up another's payment detail, bring them back to dashboard */
         if (auth()->user()->level != "admin" ?? $transaction->user_id != auth()->id()) {
             return redirect()->route('dashboard.main')->withError('Unable to access ticket details of others');
@@ -133,21 +136,71 @@ class TransactionController extends Controller
         {
             $data = Transaction::findOrFail($request->id);
 
-            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
-
-            $order = $data->order_id;
             /* Getting midtrans order data */
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Basic ' . $midtrans_serverkey,
-            ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
-            $response = json_decode($response->body());
+            $order = $data->order_id;
+            $response = (new MiscController)->getMidtrans($order);
 
             return [
                 $data, // return transactions row
                 $data->fk_ticket_id, // return tickets foreign key row
-                $response
+                $response, // return midtrans order field
             ];
+        }
+    }
+
+    /**
+     * Append data on transaction history at dashboard
+     */
+    public function append(Request $request)
+    {
+        if ($request->ajax()) {
+            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
+
+            $data = Transaction::all()->where('user_id', '=', $request->user_id)->sortByDesc('created_at');
+
+            $output = '';
+            if (count($data) > 0) {
+                foreach ($data as $transaction) {
+                    $order = $transaction->order_id;
+                    /* Getting midtrans order data */
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Basic ' . $midtrans_serverkey,
+                    ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
+
+                    $response = json_decode($response->body());
+                    $status = $response->status_code; // "transaction_status"
+
+                    $output .= '
+                    <div id="transaction-' . $transaction->id . '" class="transaction-card"
+                    onclick="get(' . $transaction->id . ')" data-bs-toggle="modal"
+                    data-bs-target="#historyDetail">
+                        <div class="d-flex justify-content-between">
+                            <span>ID: KDWF-' . $transaction->snap_token . '</span>';
+                    if ($status == 200) {
+                        $output .= '<span class="text-success">Success</span>';
+                    } elseif ($status == 201 or $status == 404) {
+                        $output .= '<span class="text-info">Pending</span>';
+                    } elseif ($status == 407) {
+                        $output .= '<span class="text-danger">Expired</span>';
+                    } else {
+                        $output .= '<span class="text-secondary">Undefined ('. $status .')</span>';
+                    }
+                    $output .= '
+                            </div>
+                            <div class="mt-2">' . $transaction->created_at . '</div>
+                            <div class="mt-2">' . $transaction->amount . 'x ' . $transaction->fk_ticket_id->name . ' Ticket</div>
+                            <div class="mt-2">' . number_format($transaction->total) . '</div>
+                            </div>
+                            ';
+                }
+            } else {
+                $output = '
+                <h5 class="text-center mt-5">No data available</h5>    
+                ';
+            }
+
+            return $output;
         }
     }
 
@@ -324,59 +377,6 @@ class TransactionController extends Controller
     }
 
     /**
-     * Append data on transaction history at dashboard
-     */
-    public function append(Request $request)
-    {
-        if ($request->ajax()) {
-            $midtrans_serverkey = base64_encode(config('midtrans.serverKey'));
-
-            $data = Transaction::all()->where('user_id', '=', $request->user_id)->sortByDesc('created_at');
-
-            $output = '';
-            if (count($data) > 0) {
-                foreach ($data as $transaction) {
-                    $order = $transaction->order_id;
-                    /* Getting midtrans order data */
-                    $response = Http::withHeaders([
-                        'Content-Type' => 'application/json',
-                        'Authorization' => 'Basic ' . $midtrans_serverkey,
-                    ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
-
-                    $response = json_decode($response->body());
-
-                    $output .= '
-                    <div id="transaction-' . $transaction->id . '" class="transaction-card"
-                    onclick="get(' . $transaction->id . ')" data-bs-toggle="modal"
-                    data-bs-target="#historyDetail">
-                        <div class="d-flex justify-content-between">
-                            <span>ID: KDWF-' . $transaction->snap_token . '</span>';
-                    if ($response->status_code == 404 ?? $response->status_code = 201) {
-                        $output .= '<span class="text-info">Pending</span>';
-                    } elseif ($response->status_code == 200) {
-                        $output .= '<span class="text-success">Success</span>';
-                    } else {
-                        $output .= '<span class="text-danger">Expired</span>';
-                    }
-                    $output .= '
-                            </div>
-                            <div class="mt-2">' . $transaction->created_at . '</div>
-                            <div class="mt-2">' . $transaction->amount . ' ' . $transaction->fk_ticket_id->name . ' Ticket</div>
-                            <div class="mt-2">' . number_format($transaction->total) . '</div>
-                            </div>
-                            ';
-                }
-            } else {
-                $output = '
-                <h5 class="text-center mt-5">No data available</h5>    
-                ';
-            }
-
-            return $output;
-        }
-    }
-
-    /**
      * Display checkout page for a single transaction
      */
     public function checkout(String $order, String $snap)
@@ -426,16 +426,14 @@ class TransactionController extends Controller
             ]);
 
             // Send email to user
-            $email = $transaction->email;
-            $name = $transaction->name;
-            $link = route('transactions.checkout', [
-                'order_id' => $transaction->order_id,
-                'snap_token' => $transaction->snap_token,
-            ]);
-            $mail = Mail::to($email, $name)->send(new SendLinkMail($link, $transaction));
+            $mail = (new MailController)->mail($request->id);
 
+            if ($mail) {
+                return $request->session()->token();
+            } else {
+                return "mail failed";
+            }
             // return redirect()->route('transactions.index')->with(['success' => 'Transaction successfully confirmed']);
-            return $request->session()->token();
         }
     }
 }

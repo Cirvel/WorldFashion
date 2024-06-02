@@ -19,11 +19,11 @@ class MailController extends Controller
 
     //     return back();
     // }
-    public function mail(Request $request)
+    public function mail(String $id)
     {
         // if ($request->ajax()) {
             // $transaction = Transaction::findOrFail($request->id);
-            $transaction = Transaction::findOrFail($request->input('id'));
+            $transaction = Transaction::findOrFail($id);
             $email = $transaction->email;
             $name = $transaction->name;
             $link = route('transactions.checkout', [
@@ -41,7 +41,7 @@ class MailController extends Controller
             //     'transaction' => $transaction,
             // ]);
 
-            return redirect('/');
+            return true;
         // }
     }
 }

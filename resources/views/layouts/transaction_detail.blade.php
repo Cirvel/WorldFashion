@@ -28,8 +28,9 @@
                     <p>Date: <span id="h-date"></span></p>
                     <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
                     <p>Amount: Rp. <span id="h-total"></span></p>
+                    <p id="snap-throbber" class='fs-3 text-center m-0'><i class='fa fa-spinner'></i><p>
                     <button class="btn btn-primary" id="snap-pay">
-                        Pay <i class="fa fa-qrcode"></i>
+                        <i class="fa fa-qrcode"></i> Purchase
                     </button>
                 </div>
             </div>
