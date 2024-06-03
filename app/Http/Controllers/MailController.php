@@ -9,6 +9,9 @@ use App\Mail\SendLinkMail;
 
 class MailController extends Controller
 {
+    /**
+     * Send mail
+     */
     public function mail(String $id) {
         $transaction = Transaction::findOrFail($id);
         $email = $transaction->email;
@@ -21,5 +24,24 @@ class MailController extends Controller
         Mail::to($email, $name)->send(new SendLinkMail($link,$transaction));
 
         return true;
+    }
+    /**
+     * View mail, dev only
+     */
+    public function view(String $id) {
+        $transaction = Transaction::findOrFail($id);
+        $email = $transaction->email;
+        $name = $transaction->name;
+        $link = route('transactions.checkout',[
+            'order_id' => $transaction->order_id,
+            'snap_token' => $transaction->snap_token,
+        ]);
+
+        // Mail::to($email, $name)->send(new SendLinkMail($link,$transaction));
+
+        return view('mail.index',[
+            'link' => $link,
+            'transaction' => $transaction
+        ]);
     }
 }

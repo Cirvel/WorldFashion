@@ -74,6 +74,7 @@ Route::get('admin', function () {
 
 /* Mail */
 Route::get('mail', [MailController::class, 'mail'])->name('mail');
+Route::get('view_mail/{id}', [MailController::class, 'view']);
 
 /* CRUD */
 Route::resource('users',    UserController::class);

@@ -24,15 +24,18 @@
         </div>
     </header>
     <hr>
-    <p class="fw-medium fs-4">Hello, {{ $transaction->name }}</p>
+    <p class="fw-medium fs-5">Hello, {{ $transaction->name }}</p>
     <p class="fs-5">
         Thank you for purchasing ticket for our events! <br>
-        Please let the staff scan the QR code above before enjoying your visit.
+        Please let our staff scan the QR code above before visiting our event.
     </p>
     <br>
-    <footer>
+    <footer class="d-flex offcanvas-bottom">
         <p class="fs-5">
             {{ config('app.name') }}
+        </p>
+        <p class="fs-5 ms-auto">
+            <i class="fa fa-calendar"></i> {{ $transaction->updated_at }}
         </p>
     </footer>
 </body>

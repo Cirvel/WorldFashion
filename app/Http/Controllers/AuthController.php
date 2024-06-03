@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Closure;
 
 class AuthController extends Controller
 {
@@ -116,12 +117,26 @@ class AuthController extends Controller
         
         // Check if field met criteria
         $incomingFields = $request->validate([
-            'name' => ['required','min:1','max:15'],
+            'name' => ['required','min:4','max:15'],
             'password' => [
                 'required',
                 'min:8',
                 'max:20',
-                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$&%]).*$/'
+                'regex:/^.*(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$&%]).*$/',
+                function (String $attr, mixed $value, Closure $fail) {
+                    if (!preg_match('/[a-z]/',$value)) {
+                        $fail("The {$attr} must contain atleast one lowercase letter");
+                    }
+                    if (!preg_match('/[A-Z]/',$value)) {
+                        $fail("The {$attr} must contain atleast one uppercase letter");
+                    }
+                    if (!preg_match('/[0-9]/',$value)) {
+                        $fail("The {$attr} must contain atleast one number");
+                    }
+                    if (!preg_match('/[!@#$&%]/',$value)) {
+                        $fail("The {$attr} must contain atleast one: !, @, #, $, &, %");
+                    }
+                }
             ],
             'no_telp' => ['required','min:10','max:13'],
             'email' => ['required','email'],

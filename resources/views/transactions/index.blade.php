@@ -117,10 +117,13 @@
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-success mb-1"><i class="fas fa-check-circle"></i></button>
                                 </a> --}}
-                                {{-- <a href="{{ route('transactions.show', ['transaction' => $transaction]) }}"
+                                <a href="{{ route('transactions.checkout', [
+                                    'order_id' => $transaction->order_id,
+                                    'snap_token' => $transaction->snap_token,
+                                ]) }}"
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-info mb-1"><i class="fas fa-eye"></i></button>
-                                </a> --}}
+                                </a>
                                 <a href="{{ route('transactions.edit', ['transaction' => $transaction]) }}"
                                     class="text-decoration-none">
                                     <button type="button" class="btn btn-warning mb-1"><i

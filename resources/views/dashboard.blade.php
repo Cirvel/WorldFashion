@@ -122,18 +122,18 @@
                         <form id="order_form" action="{{ route('transactions.store') }}" method="POST">
                             @csrf
                             @method('post')
-                            <div class="mb-3 row">
+                            {{-- <div class="mb-3 row invisible">
                                 <label for="ticket_id" class="col-sm-2 col-form-label">Ticket</label>
-                                <div class="col-sm-10">
-                                    <select class="form-select" name="ticket_id" id="ticket_id" onchange="ticket()">
+                                <div class="col-sm-10"> --}}
+                                    <select class="form-select" hidden name="ticket_id" id="ticket_id" onchange="ticket()">
                                         @foreach ($tickets as $ticket)
                                             <option value="{{ $ticket->id }}"
                                                 title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                </div>
-                            </div>
+                                {{-- </div>
+                            </div> --}}
                             <input type="hidden" class="form-control" name="price" id="price" value="0"
                                 readonly>
                             <input type="hidden" class="form-control" name="ticket_name" id="ticket_name"
@@ -214,87 +214,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- <!-- Modal 3 OLD -->
-        <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title" id="nextInputModalLabel">Pay Now</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row ms-1 me-1 d-flex no_padding_margin">
-                            <div class="col-12 col-md-4 text-start">
-                                <b>
-                                    <p class="no_padding_margin">Tanggal:</p>
-                                </b>
-                                <p class="no_padding_margin">22/05/2024</p>
-                            </div>
-                            <div class="col-12 col-md-4 text-start">
-                                <b>
-                                    <p class="no_padding_margin">Kode:</p>
-                                </b>
-                                <p class="no_padding_margin">KWDF-123456789109</p>
-                            </div>
-                            <div class="col-12 col-md-4 text-start">
-                                <b>
-                                    <p class="no_padding_margin">Status:</p>
-                                </b>
-                                <p class="no_padding_margin">Belum Dibayar</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div
-                                class="col-md-4 text-center d-flex flex-column justify-content-center align-items-center pt-3 pb-3">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">8</h3>
-                                        <h4 class="countdown_text no_padding_margin">Hrs</h4>
-                                    </div>
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">0</h3>
-                                        <h4 class="countdown_text no_padding_margin">Min</h4>
-                                    </div>
-                                    <div class="cr">
-                                        <h3 class="countdown_text no_padding_margin">0</h3>
-                                        <h4 class="countdown_text no_padding_margin">Sec</h4>
-                                    </div>
-                                </div>
-                                <div class="row mt-3" id="qr">
-                                    <img src="/Img/logo_tm.png" alt="QR Code" class="img-fluid">
-                                    <!-- QR Code Here -->
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-8 pe-0 mt-3">
-                                <div class="row no_padding_margin">
-                                    <div class="col-5 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label class="pembelian_text" for="name">Name: </label>
-                                        <label for="no.telp">No. Telp: </label>
-                                        <label for="email">Email: </label>
-                                        <label for="jumlah_tiket">Ticket: </label>
-                                        <label for="total_bayar">Total: </label>
-                                    </div>
-                                    <div class="col-7 no_padding_margin fs-5 d-flex flex-column gap-1">
-                                        <label><span id="name_2"></span></label>
-                                        <label><span id="no_telp_2"></span></label>
-                                        <label><span id="email_2"></span></label>
-                                        <label><span id="amount_2"></span> <span id="ticket_2"></span> Ticket</label>
-                                        <label>Rp. <span id="total_2"></span></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-primary" id="closeConfirmationBtn"
-                            data-bs-toggle="modal" data-bs-target="" onclick="store_transactions()">Confirm & Submit</button>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
 
         <!-- Modal 3 -->
         <div class="modal fade" id="nextInputModal" tabindex="-1" aria-labelledby="nextInputModalLabel"
