@@ -70,7 +70,9 @@
             type: "POST", // Method
             data: $('#order_form').serializeArray(), // Parameters
             success: function(data) { // Set price as return value
-                b5_alert("staticAlert", "<strong>Transaction has been successfully submitted, please go to the transaction history to confirm your payment.</strong>", "success");
+                b5_alert("staticAlert",
+                    "<strong>Transaction has been successfully submitted, please go to the transaction history to confirm your payment.</strong>",
+                    "success");
                 // alert('success');
             },
             error: function(message, error) {
@@ -80,26 +82,27 @@
     }
 
     /* Confirm data and deduct ticket stock using AJAX */
-    // function confirm_transactions() {
-    //     // alert('confirming transaction');
+    function confirm_transactions() {
+        // alert('confirming transaction');
+        var form = $('#history_form');
+        var token = form.find('input[name="_token"]');
 
-    //     var form = $('#history_form');
-    //     var token = form.find('input[name="_token"]');
+        $.ajax({
+            url: "{{ route('transactions.confirm') }}",
+            type: "POST",
+            data: $('#history_form').serializeArray(),
+            success: function(data) {
+                // alert('success : ' + data);
+                $("#snap-pay").hide();
+                token.val(data);
+            },
+            error: function(message, error) {
+                alert('failed : ' + message.status);
+            }
+        })
+        b5_alert('staticAlert', 'Payment success!', 'success');
+    };
 
-    //     $.ajax({
-    //         url: "{{ route('transactions.confirm') }}",
-    //         type: "POST",
-    //         data: $('#history_form').serializeArray(),
-    //         success: function(data) {
-    //             alert('success : ' + data);
-    //             token.val(data);
-    //         },
-    //         error: function(message, error) {
-    //             alert('failed : ' + message.status);
-    //         }
-    //     })
-    // };
-    
     /* Display rows in transaction history */
     function append() {
         $('#transactions_history').html("<p class='fs-3 text-center'><i class='fa fa-spinner'></i><p>");
@@ -140,10 +143,10 @@
                 $("#snap-throbber").hide();
                 if (data[2].status_code == 200) {
                     status = "Success";
-                } else if(data[2].status_code == 201 || data[2].status_code == 404) {
+                } else if (data[2].status_code == 201 || data[2].status_code == 404) {
                     status = "Pending";
                     $("#snap-pay").show();
-                } else if(data[2].status_code == 407) {
+                } else if (data[2].status_code == 407) {
                     status = "Expired";
                 } else {
                     status = "Undefined";
@@ -226,7 +229,7 @@
                     data: $('#history_form').serializeArray(),
                     success: function(data) {
                         // alert('success : ' + data);
-                        $("#snap-pay").hide();  
+                        $("#snap-pay").hide();
                         token.val(data);
                     },
                     error: function(message, error) {
