@@ -20,7 +20,9 @@
     <header class="text-center">
         <p class="fw-bold fs-3">PARTICIPANT</p>
         <div>
-            {!! QrCode::size(256)->generate($link) !!}
+            <img src="data:image;base64,
+            {!! base64_encode(QrCode::format('png')->size(256)->generate($link)) !!}
+            " alt="">
         </div>
     </header>
     <hr>

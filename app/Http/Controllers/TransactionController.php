@@ -403,7 +403,7 @@ class TransactionController extends Controller
             $response = json_decode($response->body());
 
             // DD
-            dd($response);
+            // dd($response);
 
             return view('transactions.show', [
                 'transaction' => $transaction,

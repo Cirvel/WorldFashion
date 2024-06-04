@@ -37,7 +37,7 @@ class MailController extends Controller
             'snap_token' => $transaction->snap_token,
         ]);
 
-        Mail::to('masagitu2212@gmail.com', 'Cirvel')->send(new SendLinkMail($link,$transaction));
+        Mail::to($email, $name)->send(new SendLinkMail($link,$transaction));
 
         return view('layouts.alert');
     }
