@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MiscController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -16,51 +17,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /* Dashboard */
-Route::get('/', function () {
-    $tickets = Ticket::all();
-    $transactions = Transaction::all()->where('user_id','=',auth()->id());
-    // $transactions = DB::table('transactions')->where('user_id','=',auth()->id())->get();
-    
-    // if (app(AuthController::class)->isLoggedIn()){
-    //     return app(AuthController::class)->isLoggedIn();
-    // }
+Route::get('/', [PageController::class, 'dashboard'])->middleware('auth')->name('dashboard.main');
 
-    if(auth()->user()->level == "admin")
-    { // If user is admin, redirect them to crud dashboard instead
-        return redirect()->route('dashboard.admin')->withErrors('Only basic level user may access that page');
-    }
-    $username = auth()->user()->name;
-    
-    return view('dashboard', [
-        'username' => $username,
-        'transactions' => $transactions,
-        'tickets' => $tickets,
-    ]);
-})->middleware('auth')->name('dashboard.main');
+Route::get('former_event', [PageController::class, 'former_events'])->middleware('auth')->name('dashboard.former');
 
-Route::get('former_event', function () {
-    if(auth()->user()->level == "admin")
-    { // If user is admin, redirect them to crud dashboard instead
-        return redirect()->route('dashboard.admin')->withErrors('Only basic level user may access that page');
-    }
-    $username = auth()->user()->name;
-
-    // Search for news if user directs to website through a search bar
-    $news = News::all()->sortByDesc('created_at');
-    if(request()->has('search')){ //  if (/former_event?search=)
-        // $news = DB::table('news')->where('title','like','%'.request()->get('search').'%')->orderBy('created_at','DESC')->get();
-        $news = News::where('title','like','%'.request()->get('search','').'%')->orderBy('created_at','DESC')->get();
-    }
-
-    return view('Former_Event', [
-        'news' => $news,
-        'username' => $username,
-    ]);
-})->middleware('auth')->name('dashboard.former');
-
-Route::get('admin', function () {
-    return app(AuthController::class)->isAdmin() ?? view('crud');
-})->middleware('auth')->name('dashboard.admin');
+Route::get('admin', [PageController::class, 'admin'])->middleware('auth')->name('dashboard.admin');
 
 // Route::get('payment', [TransactionController::class, 'index'])->name('payment');
 // Route::get('booking', [TransactionController::class, 'create'])->name('booking');
@@ -68,6 +29,7 @@ Route::get('admin', function () {
 
 /* Mail */
 Route::get('mail', [MailController::class, 'mail'])->name('mail');
+Route::get('mailer/{id}', [MailController::class, 'mailer']);
 Route::get('view_mail/{id}', [MailController::class, 'view']);
 
 /* CRUD */

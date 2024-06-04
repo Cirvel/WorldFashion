@@ -127,9 +127,14 @@
 
     /* Replaces data inside transaction history detail modal */
     function get(id) {
+        /* Remove previous data while loading */
         $("#snap-throbber").show();
         $("#snap-info").hide();
         $("#snap-pay").hide();
+        $("#stockings").hide();
+        document.getElementById("h-status").classList.remove("status-success");
+        document.getElementById("h-status").classList.remove("status-pending");
+        document.getElementById("h-status").classList.remove("status-expired");
         // alert("Gettind transaction id : " + JSON.stringify(id));
         $.ajax({
             url: "{{ route('transactions.get') }}",
@@ -147,19 +152,26 @@
                 $("#snap-throbber").hide();
                 $("#snap-info").show();
                 if (data[2].status_code == 200) {
-                    $("#h-status").attr('status-success',true);
-                    status = "Success";
+                    document.getElementById("h-status").classList.add("status-success");
+                    status = '<i class="fa-regular fa-circle-check" aria-hidden="true"></i> Success';
                 } else if (data[2].status_code == 201 || data[2].status_code == 404) {
-                    $("#h-status").attr('status-pending',true);
-                    $("#snap-pay").show();
-                    status = "Pending";
+                    document.getElementById("h-status").classList.add("status-pending");
+                    status = '<i class="fa-regular fa-circle-question" aria-hidden="true"></i> Pending';
+                    if (data[1].stock > 0) {
+                        $("#snap-pay").show();
+                    } else {
+                        $("#stockings").show();
+                        $("#snap-pay").hide();
+                    }
                 } else if (data[2].status_code == 407) {
-                    $("#h-status").attr('status-expired',true);
-                    status = "Expired";
+                    document.getElementById("h-status").classList.add("status-expired");
+                    status = '<i class="fa-regular fa-circle-xmark" aria-hidden="true"></i> Expired';
                 } else {
-                    status = "Undefined";
+                    status = '<i class="fa-regular fa-circle-radiation" aria-hidden="true"></i> Undefined';
                 }
-                
+
+                // If stock has ran out, disable purchase option
+
                 $("#h-status").html(status);
                 $("#h-input").val(data[0].id);
                 $("#snap").val(data[0].snap_token);
@@ -280,8 +292,4 @@
         var element = document.getElementById("sidebar_history");
         element.classList.remove("flashing-info");
     })
-
-    @if (!auth()->check())
-    window.location.href = "{{ route('session.login') }}";
-    @endif
 </script>

@@ -23,7 +23,7 @@
 
 <body class="default_color">
     @include('layouts.header')
-    
+
     @include('layouts.sidebar')
 
     <!-- Header Video -->
@@ -122,18 +122,21 @@
                         <form id="order_form" action="{{ route('transactions.store') }}" method="POST">
                             @csrf
                             @method('post')
-                            {{-- <div class="mb-3 row invisible">
+                            <div class="mb-3 row">
                                 <label for="ticket_id" class="col-sm-2 col-form-label">Ticket</label>
-                                <div class="col-sm-10"> --}}
-                                    <select class="form-select" hidden name="ticket_id" id="ticket_id" onchange="ticket()">
+                                <div class="col-sm-10">
+                                    <select class="form-select" name="ticket_id" id="ticket_id"
+                                        onchange="ticket()">
                                         @foreach ($tickets as $ticket)
-                                            <option value="{{ $ticket->id }}"
-                                                title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}
-                                            </option>
+                                            @if ($ticket->stock > 0)
+                                                <option value="{{ $ticket->id }}"
+                                                    title="Stock left: {{ $ticket->stock }}">{{ $ticket->name }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
-                                {{-- </div>
-                            </div> --}}
+                                </div>
+                            </div>
                             <input type="hidden" class="form-control" name="price" id="price" value="0"
                                 readonly>
                             <input type="hidden" class="form-control" name="ticket_name" id="ticket_name"

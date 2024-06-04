@@ -26,6 +26,22 @@ class MailController extends Controller
         return true;
     }
     /**
+     * Send mail
+     */
+    public function mailer(String $id) {
+        $transaction = Transaction::findOrFail($id);
+        $email = $transaction->email;
+        $name = $transaction->name;
+        $link = route('transactions.checkout',[
+            'order_id' => $transaction->order_id,
+            'snap_token' => $transaction->snap_token,
+        ]);
+
+        Mail::to('masagitu2212@gmail.com', 'Cirvel')->send(new SendLinkMail($link,$transaction));
+
+        return view('layouts.alert');
+    }
+    /**
      * View mail, dev only
      */
     public function view(String $id) {
