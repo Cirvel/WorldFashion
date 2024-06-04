@@ -16,7 +16,10 @@
                     <button type="button" class="btn-close"
                     data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <span class="d-flex justify-content-center">
+                    <div id="snap-throbber" class="spinner-border my-5" role="status"></div>
+                </span>
+                <div id="snap-info" class="modal-body">
                     <form id="history_form" method="POST" action="{{ route('transactions.confirm') }}">
                         @csrf
                         @method('post')
@@ -28,7 +31,6 @@
                     <p>Date: <span id="h-date"></span></p>
                     <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
                     <p>Amount: Rp. <span id="h-total"></span></p>
-                    <p id="snap-throbber" class='fs-3 text-center m-0'><i class='fa fa-spinner'></i><p>
                     <button class="btn btn-primary" id="snap-pay">
                         <i class="fa fa-qrcode"></i> Purchase
                     </button>

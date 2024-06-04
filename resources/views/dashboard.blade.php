@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<div id="staticAlert" class="position-fixed fixed-top m-3"></div>
+@include('layouts.alert')
 
 @include('layouts.transaction_history')
 
@@ -349,7 +349,6 @@
 <script type="text/javascript">
     countdownTimer();
     ticket();
-    append();
 </script>
 
 </html>

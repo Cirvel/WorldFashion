@@ -70,6 +70,7 @@
             type: "POST", // Method
             data: $('#order_form').serializeArray(), // Parameters
             success: function(data) { // Set price as return value
+                store_notifications();
                 b5_alert("staticAlert",
                     "<strong>Transaction has been successfully submitted, please go to the transaction history to confirm your payment.</strong>",
                     "success");
@@ -105,7 +106,8 @@
 
     /* Display rows in transaction history */
     function append() {
-        $('#transactions_history').html("<p class='fs-3 text-center'><i class='fa fa-spinner'></i><p>");
+        $('#history-throbber').show();
+        $('#transactions_history').html("");
         $.ajax({
             url: "{{ route('transactions.append') }}",
             type: "GET",
@@ -113,6 +115,7 @@
                 'user_id': {{ auth()->id() }},
             },
             success: function(data) {
+                $('#history-throbber').hide();
                 $('#transactions_history').html(data);
             },
             error: function(message, error) {
@@ -125,6 +128,7 @@
     /* Replaces data inside transaction history detail modal */
     function get(id) {
         $("#snap-throbber").show();
+        $("#snap-info").hide();
         $("#snap-pay").hide();
         // alert("Gettind transaction id : " + JSON.stringify(id));
         $.ajax({
@@ -139,19 +143,23 @@
                  * data[1] = tickets
                  * data[2] = midtrans order
                  */
-                var status;
+                var status = "";
                 $("#snap-throbber").hide();
+                $("#snap-info").show();
                 if (data[2].status_code == 200) {
+                    $("#h-status").attr('status-success',true);
                     status = "Success";
                 } else if (data[2].status_code == 201 || data[2].status_code == 404) {
-                    status = "Pending";
+                    $("#h-status").attr('status-pending',true);
                     $("#snap-pay").show();
+                    status = "Pending";
                 } else if (data[2].status_code == 407) {
+                    $("#h-status").attr('status-expired',true);
                     status = "Expired";
                 } else {
                     status = "Undefined";
                 }
-
+                
                 $("#h-status").html(status);
                 $("#h-input").val(data[0].id);
                 $("#snap").val(data[0].snap_token);
@@ -258,4 +266,22 @@
             document.body.style.paddingRight = '';
         }
     });
+
+    /* Notifiers for new payments */
+    function store_notifications() {
+        document.getElementById("nav_toggle").classList.add("flashing-info");
+        document.getElementById("sidebar_history").classList.add("flashing-info");
+    }
+    $('#nav_toggle').click(function(e) {
+        var element = document.getElementById("nav_toggle");
+        element.classList.remove("flashing-info");
+    })
+    $('#sidebar_history').click(function(e) {
+        var element = document.getElementById("sidebar_history");
+        element.classList.remove("flashing-info");
+    })
+
+    @if (!auth()->check())
+    window.location.href = "{{ route('session.login') }}";
+    @endif
 </script>

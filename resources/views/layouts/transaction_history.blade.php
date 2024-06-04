@@ -16,6 +16,9 @@
                     <h5 class="modal-title" id="transactionHistoryModalLabel">Transaction History</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <span class="d-flex justify-content-center">
+                    <div id="history-throbber" class="spinner-border my-5" role="status"></div>
+                </span>
                 <div id="transactions_history" class="modal-body">
                 </div>
             </div>

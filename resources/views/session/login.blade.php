@@ -19,7 +19,7 @@
     <div class="container-fluid login-container">
         <div class="row">
             <div class="m-auto col-md-6 d-none d-md-block login-image">
-                <img src="/Img/bg.jpg" alt="Login Image">
+                <img src="/Img/fashion-show.jpg" alt="Login Image">
             </div>
             <div class="col-12 col-md-6 login-form-container d-flex justify-content-center flex-column">
                 <div class="login-form">

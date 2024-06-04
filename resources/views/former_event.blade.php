@@ -16,7 +16,7 @@
 
 </head>
 
-<div id="staticAlert" class="position-fixed fixed-top m-3"></div>
+@include('layouts.alert')
 
 @include('layouts.transaction_history')
 

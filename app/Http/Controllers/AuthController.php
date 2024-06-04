@@ -12,7 +12,7 @@ class AuthController extends Controller
     /* Check if user is logged in or back to the login */
     {
         if(!auth()->check()){
-            return redirect()->route('session.login')->withErrors('Please log in');
+            return redirect()->route('login')->withErrors('Please log in');
         }
     }
     
@@ -20,7 +20,7 @@ class AuthController extends Controller
     /* Check if user is an admin or back to the dashboard, also doubles as isLoggedIn */
     {
         if(!auth()->check()){
-            return redirect()->route('session.login');
+            return redirect()->route('login');
         }elseif(auth()->user()->level!="admin"){
             return redirect()->route('dashboard.main');
         }
@@ -75,11 +75,15 @@ class AuthController extends Controller
     /**
      * Destroy user session
      */
-    public function logout() {
+    public function logout(Request $request) {
         // Logout user same way as session_destroy()
         auth()->logout();
+ 
+        $request->session()->invalidate();
+     
+        $request->session()->regenerateToken();
         // Redirect user to home page
-        return redirect()->route('session.login');
+        return redirect()->route('login');
     }
 
     /**
@@ -98,7 +102,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard.main')->with("success","Account successfully logged in.");
         } else
         {
-            return redirect()->route('session.login')->withErrors(['msg' => 'Incorrect username or password']);
+            return redirect()->route('login')->withErrors(['msg' => 'Incorrect username or password']);
         }
         
     }
@@ -138,7 +142,7 @@ class AuthController extends Controller
                     }
                 }
             ],
-            'no_telp' => ['required','min:10','max:13'],
+            'no_telp' => ['required','min:11','max:13'],
             'email' => ['required','email'],
         ]);
 

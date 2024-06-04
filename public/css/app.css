@@ -245,3 +245,19 @@ footer {
 .status-pending{
     color: blue;
 }
+
+button.flashing-info{
+    animation: flashing-btn-info 1500ms infinite;
+}
+a.flashing-info{
+    animation: flashing-text-info 1500ms infinite;
+}
+
+@keyframes flashing-btn-info{
+    0% { background-color: #54B4D3; box-shadow: 0 0 3px #54B4D3; }
+    50% { background-color: #54B4D3; box-shadow: 0 0 40px #54B4D3; }
+}
+@keyframes flashing-text-info{
+    0% { color: #54B4D3; text-shadow: 0 0 3px #54B4D3; }
+    50% { color: #54B4D3; text-shadow: 0 0 40px #54B4D3; }
+}

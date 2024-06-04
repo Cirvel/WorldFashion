@@ -32,7 +32,7 @@
                 </li>
                 <li class="nav-item">
                     <b>
-                        <h6><a class="nav-link" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        <h6><a class="nav-link" id="sidebar_history" type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#transactionHistoryModal" onclick="append()">Transaction History</a>
                         </h6>
                     </b>
