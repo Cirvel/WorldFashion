@@ -163,12 +163,7 @@ class TransactionController extends Controller
                 foreach ($data as $transaction) {
                     $order = $transaction->order_id;
                     /* Getting midtrans order data */
-                    $response = Http::withHeaders([
-                        'Content-Type' => 'application/json',
-                        'Authorization' => 'Basic ' . $midtrans_serverkey,
-                    ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
-
-                    $response = json_decode($response->body());
+                    $response = (new MiscController)->getMidtrans($order);
                     $status = $response->status_code; // "transaction_status"
 
                     $output .= '
@@ -184,13 +179,14 @@ class TransactionController extends Controller
                     } elseif ($status == 407) {
                         $output .= '<span class="text-danger">Expired</span>';
                     } else {
-                        $output .= '<span class="text-secondary">Undefined ('. $status .')</span>';
+                        $output .= '<span class="text-danger">Expired</span>';
+                        // $output .= '<span class="text-secondary">Undefined ('. $status .')</span>';
                     }
                     $output .= '
                             </div>
                             <div class="mt-2">' . $transaction->created_at . '</div>
                             <div class="mt-2">' . $transaction->amount . 'x ' . $transaction->fk_ticket_id->name . ' Ticket</div>
-                            <div class="mt-2">' . number_format($transaction->total) . '</div>
+                            <div class="mt-2">Rp. ' . number_format($transaction->total) . '</div>
                             </div>
                             ';
                 }
@@ -309,6 +305,11 @@ class TransactionController extends Controller
                     <tbody>
                 ';
                 foreach ($data as $transaction) {
+                    $order = $transaction->order_id;
+                    /* Getting midtrans order data */
+                    $response = (new MiscController)->getMidtrans($order);
+                    $status = $response->status_code; // "transaction_status"
+
                     /* Data */
                     $output .=
                         '
@@ -321,14 +322,14 @@ class TransactionController extends Controller
                         <td>' . $transaction->amount . '</td>
                         <td>' . $transaction->total . '</td>
                         ';
-                    if ($transaction->transaction_status == "success") {
+                    if ($status == 200) {
                         $output .= '
                         <td class="text-success">
                             <i class="fa-regular fa-circle-check" aria-hidden="true"></i>
                             <span class="d-none d-md-inline"> Success</span>
                         </td>
                             ';
-                    } elseif ($transaction->transaction_status == "pending") {
+                    } elseif ($status == 201 or $status == 404) {
                         $output .= '
                         <td class="text-info">
                             <i class="fa-regular fa-circle-question" aria-hidden="true"></i><span class="d-none d-md-inline">
@@ -347,7 +348,10 @@ class TransactionController extends Controller
                         <td>' . $transaction->created_at . '</td>
                         <td>
                             <form onsubmit="return confirm("Are you sure you want to delete this data?")" action="' . route('transactions.destroy', ['transaction' => $transaction]) . '" method="POST">
-                                <a href="' . route('transactions.show', ['transaction' => $transaction]) . '" class="text-decoration-none">
+                                <a href="' . route('transactions.checkout', [
+                                    'order_id' => $transaction->order_id,
+                                    'snap_token' => $transaction->snap_token,
+                                ]) . '" class="text-decoration-none">
                                     <button type="button" class="btn btn-info mb-1"><i class="fas fa-eye"></i></button>
                                 </a>
                                 <a href="' . route('transactions.edit', ['transaction' => $transaction]) . '" class="text-decoration-none">
@@ -397,6 +401,9 @@ class TransactionController extends Controller
                 'Authorization' => 'Basic ' . $midtrans_serverkey,
             ])->get('https://api.sandbox.midtrans.com/v2/' . $order . '/status');
             $response = json_decode($response->body());
+
+            // DD
+            // dd($response);
 
             return view('transactions.show', [
                 'transaction' => $transaction,

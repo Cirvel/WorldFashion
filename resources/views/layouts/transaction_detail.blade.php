@@ -27,10 +27,11 @@
                     </form>
                     <input type="hidden" name="snap" id="snap">
                     <p>Transaction ID: KDWF-<span id="h-id"></span></p>
-                    <p>Status: <span id="h-status"></span></p>
+                    <p>Status: <span class="fw-medium" id="h-status"></span></p>
                     <p>Date: <span id="h-date"></span></p>
                     <p>Item: <span id="h-amount"></span> <span id="h-ticket"></span> Ticket</p>
                     <p>Amount: Rp. <span id="h-total"></span></p>
+                    <p class="fw-medium text-danger" id="stockings"><i class="fa fa-pallet"></i> Out of stock!</p>
                     <button class="btn btn-primary" id="snap-pay">
                         <i class="fa fa-qrcode"></i> Purchase
                     </button>

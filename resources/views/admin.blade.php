@@ -38,8 +38,9 @@
     <div class="d-flex m-3">
         <h3 class="form-label">EDIT DATABASE</h3>
         <div class="ms-auto">
-            <a href="{{ route('dashboard.main') }}">
-                {{-- <button type="button" class="btn btn-danger">Return</button> --}}
+            <span>{{ auth()->user()->name }}</span>
+            <a href="{{ route('session.logout') }}">
+                <button type="button" class="btn btn-danger">Logout</button>
             </a>
         </div>
     </div>
