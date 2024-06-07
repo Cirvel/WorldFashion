@@ -61,7 +61,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Sign-in</button>
                         <div class="additional-links text-center">
-                            <p>Already have an account? <a href="{{ route('session.login') }}">Log in</a></p>
+                            <p>Already have an account? <a href="{{ route('login') }}">Log in</a></p>
                         </div>
                     </form>
                 </div>

@@ -144,21 +144,21 @@
                                 <label for="name" class="col-sm-2 col-form-label">Name</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="name" name="name"
-                                        placeholder="Nama" value="{{ auth()->user()->name }}">
+                                        placeholder="Nama" value="{{ auth()->user()->name }}" readonly>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="no_telp" class="col-sm-2 col-form-label">No. Telepon</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="no_telp" name="no_telp"
-                                        placeholder="No Telepon" value="{{ auth()->user()->no_telp }}">
+                                        placeholder="No Telepon" value="{{ auth()->user()->no_telp }}" readonly>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="email" class="col-sm-2 col-form-label">Email</label>
                                 <div class="col-sm-10">
                                     <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="Email" value="{{ auth()->user()->email }}">
+                                        placeholder="Email" value="{{ auth()->user()->email }}" readonly>
                                 </div>
                             </div>
                             <div class="mb-3 row">
